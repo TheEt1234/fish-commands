@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RoleFlag = exports.Rank = void 0;
-var Rank = exports.Rank = /** @class */ (function () {
+var Rank = /** @class */ (function () {
     function Rank(name, 
     /** Used to determine whether a rank outranks another. */ level, description, prefix, color) {
         if (color === void 0) { color = ""; }
@@ -34,7 +34,8 @@ var Rank = exports.Rank = /** @class */ (function () {
     Rank.fish = new Rank("fish", 999, "Owner.", "[blue]>|||>[] ", "[blue]"); //Might want to change this to like owner or something
     return Rank;
 }());
-var RoleFlag = exports.RoleFlag = /** @class */ (function () {
+exports.Rank = Rank;
+var RoleFlag = /** @class */ (function () {
     function RoleFlag(name, prefix, description, color, peristent) {
         if (peristent === void 0) { peristent = true; }
         this.name = name;
@@ -60,3 +61,4 @@ var RoleFlag = exports.RoleFlag = /** @class */ (function () {
     RoleFlag.afk = new RoleFlag("afk", "[orange]\uE876 AFK \uE876 | [white]", "Used for players who are idle for longer than 2 minutes.", "[orange]", false);
     return RoleFlag;
 }());
+exports.RoleFlag = RoleFlag;

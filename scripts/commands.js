@@ -41,7 +41,7 @@ exports.commandList = commandList;
 var consoleCommandList = function (list) { return list; };
 exports.consoleCommandList = consoleCommandList;
 /** Represents a permission that is required to do something. */
-var Perm = exports.Perm = /** @class */ (function () {
+var Perm = /** @class */ (function () {
     function Perm(name, check, color, unauthorizedMessage) {
         if (color === void 0) { color = ""; }
         if (unauthorizedMessage === void 0) { unauthorizedMessage = "You do not have the required permission (".concat(name, ") to execute this command"); }
@@ -73,6 +73,7 @@ var Perm = exports.Perm = /** @class */ (function () {
     });
     return Perm;
 }());
+exports.Perm = Perm;
 /**Takes an arg string, like `reason:string?` and converts it to a CommandArg. */
 function processArgString(str) {
     //this was copypasted from mlogx haha

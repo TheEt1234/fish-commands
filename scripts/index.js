@@ -32,6 +32,7 @@ var __read = (this && this.__read) || function (o, n) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var commands = require("./commands");
 var consoleCommands = require("./consoleCommands");
+var packetHandlers = require("./packetHandlers");
 var globals_1 = require("./globals");
 var memberCommands = require("./memberCommands");
 var menus = require("./menus");
@@ -103,9 +104,9 @@ Events.on(EventType.ServerLoadEvent, function (e) {
     commands.register(staffCommands.commands, clientHandler, serverHandler);
     commands.register(playerCommands.commands, clientHandler, serverHandler);
     commands.register(memberCommands.commands, clientHandler, serverHandler);
-    //commands.register(packetHandlers.commands, clientHandler, serverHandler);
+    commands.register(packetHandlers.commands, clientHandler, serverHandler);
     commands.registerConsole(consoleCommands.commands, serverHandler);
-    //packetHandlers.loadPacketHandlers();
+    packetHandlers.loadPacketHandlers();
     // stored for limiting /reset frequency
     Core.settings.remove('lastRestart');
     //const getIp = Http.get('https://api.ipify.org?format=js');
