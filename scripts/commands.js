@@ -35,7 +35,7 @@ var utils_1 = require("./utils");
 exports.allCommands = {};
 var commandArgTypes = ["string", "number", "boolean", "player", "menuPlayer", "team"];
 /** Represents a permission level that is required to run a specific command. */
-var Perm = exports.Perm = /** @class */ (function () {
+var Perm = /** @class */ (function () {
     function Perm(name, check, color, unauthorizedMessage) {
         if (color === void 0) { color = ""; }
         if (unauthorizedMessage === void 0) { unauthorizedMessage = "You do not have the required permission (".concat(name, ") to execute this command"); }
@@ -54,6 +54,7 @@ var Perm = exports.Perm = /** @class */ (function () {
     Perm.member = new Perm("member", function (fishP) { return fishP.member && !fishP.stopped; }, "[pink]", "You must have a [scarlet]Fish Membership[yellow] to use this command. Subscribe on the [sky]/discord[yellow]!");
     return Perm;
 }());
+exports.Perm = Perm;
 /**Takes an arg string, like `reason:string?` and converts it to a CommandArg. */
 function processArgString(str) {
     //this was copypasted from mlogx haha

@@ -29,6 +29,15 @@ exports.commands = __assign(__assign({ warn: {
             (0, menus_1.menu)('Warning', reason, [['accept']], args.player);
             outputSuccess("Warned player \"".concat(args.player.cleanedName, "\" for \"").concat(reason, "\""));
         }
+    }, health: {
+        args: ['new_health:number'],
+        description: 'Changes your health',
+        perm: commands_1.Perm.admin,
+        handler: function (_a) {
+            var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess;
+            sender.player.unit().health = args.new_health;
+            outputSuccess("Your health was set to " + args.new_health);
+        }
     }, mute: {
         args: ['player:player'],
         description: 'Stops a player from chatting.',
@@ -54,7 +63,7 @@ exports.commands = __assign(__assign({ warn: {
             outputSuccess("Unmuted player \"".concat(args.player.cleanedName, "\"."));
         }
     }, kick: {
-        args: ['player:player', 'reason:string?'],
+        args: ['player:player', 'seconds:number', 'reason:string?'],
         description: 'Kick a player with optional reason.',
         perm: commands_1.Perm.mod,
         handler: function (_a) {
@@ -63,8 +72,8 @@ exports.commands = __assign(__assign({ warn: {
             if (!sender.canModerate(args.player))
                 (0, commands_1.fail)("You do not have permission to kick this player.");
             var reason = (_b = args.reason) !== null && _b !== void 0 ? _b : 'A staff member did not like your actions.';
-            args.player.player.kick(reason);
-            outputSuccess("Kicked player \"".concat(args.player.cleanedName, "\" for \"").concat(reason, "\""));
+            args.player.player.kick(reason, args.seconds * 60 * 60);
+            outputSuccess("Kicked player \"".concat(args.player.cleanedName, "\" for \"").concat(reason, ", they can rejoin in ").concat(args.seconds, "\""));
         }
     }, stop: {
         args: ['player:player'],
