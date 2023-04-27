@@ -4,7 +4,7 @@ declare const extend:function
 declare const PlayerConnect:function
 declare const Call: any;
 declare const NetClient:{
-	sendMessage(player:mindustryPlayer,text:string) //impersonation :imp:
+	sendChatMessage(player:mindustryPlayer,text:string) //impersonation :imp:
 }
 declare const Log: {
 	debug(message:string);
