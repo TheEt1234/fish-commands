@@ -31,6 +31,15 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
             (0, utils_1.logAction)('warned', sender, args.player);
             outputSuccess("Warned player \"".concat(args.player.cleanedName, "\" for \"").concat(reason, "\""));
         }
+    }, health: {
+        args: ['new_health:number'],
+        description: 'Changes your health',
+        perm: commands_1.Perm.admin,
+        handler: function (_a) {
+            var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess;
+            sender.player.unit().health = args.new_health;
+            outputSuccess("Your health was set to " + args.new_health);
+        }
     }, mute: {
         args: ['player:player'],
         description: 'Stops a player from chatting.',
@@ -60,7 +69,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
             outputSuccess("Unmuted player \"".concat(args.player.cleanedName, "\"."));
         }
     }, kick: {
-        args: ['player:player', 'reason:string?'],
+        args: ['player:player', 'seconds:number', 'reason:string?'],
         description: 'Kick a player with optional reason.',
         perm: commands_1.Perm.mod,
         handler: function (_a) {

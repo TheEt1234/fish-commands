@@ -1,5 +1,11 @@
-
+declare const Player:any //different from mindustryPlayer
+declare const NetConnection:any
+declare const extend:function
+declare const PlayerConnect:function
 declare const Call: any;
+declare const NetClient:{
+	sendMessage(player:mindustryPlayer,text:string) //impersonation :imp:
+}
 declare const Log: {
 	debug(message:string);
 	info(message:string);
@@ -12,6 +18,7 @@ declare const Strings: {
 declare const Vars: any;
 declare const Events: {
 	on(event:EventType, handler:(e:any) => void);
+	fire(event:EventType)
 }
 declare type Tile = any;
 declare const ServerLoadEvent: any;

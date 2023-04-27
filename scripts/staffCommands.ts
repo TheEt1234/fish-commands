@@ -22,6 +22,17 @@ export const commands = commandList({
 			outputSuccess(`Warned player "${args.player.cleanedName}" for "${reason}"`);
 		}
 	},
+  
+  health:{
+    args:['new_health:number'],
+    description:'Changes your health',
+    perm: Perm.admin,
+    handler({args, sender, outputSuccess}){
+        sender.player.unit().health=args.new_health
+        outputSuccess("Your health was set to "+args.new_health)
+      
+    }
+  },
 
 	mute: {
 		args: ['player:player'],
@@ -50,7 +61,7 @@ export const commands = commandList({
 	},
 
 	kick: {
-		args: ['player:player', 'reason:string?'],
+		args: ['player:player','seconds:number','reason:string?'],
 		description: 'Kick a player with optional reason.',
 		perm: Perm.mod,
 		handler({args, outputSuccess, sender}){

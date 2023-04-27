@@ -34,6 +34,7 @@ var commands = require("./commands");
 var consoleCommands = require("./consoleCommands");
 var packetHandlers = require("./packetHandlers");
 var globals_1 = require("./globals");
+<<<<<<< HEAD
 var memberCommands = require("./memberCommands");
 var menus = require("./menus");
 var ohno_1 = require("./ohno");
@@ -42,6 +43,10 @@ var players_1 = require("./players");
 var staffCommands = require("./staffCommands");
 var timers = require("./timers");
 var utils_1 = require("./utils");
+=======
+var votekick = require("./votekick");
+var tileHistory = {};
+>>>>>>> 430d816 (Added votekick)
 Events.on(EventType.PlayerJoin, function (e) {
     players_1.FishPlayer.onPlayerJoin(e.player);
 });
@@ -105,6 +110,9 @@ Events.on(EventType.ServerLoadEvent, function (e) {
     commands.register(playerCommands.commands, clientHandler, serverHandler);
     commands.register(memberCommands.commands, clientHandler, serverHandler);
     commands.register(packetHandlers.commands, clientHandler, serverHandler);
+    Vars.netServer.clientCommands.removeCommand("votekick");
+    Vars.netServer.clientCommands.removeCommand("vote");
+    commands.register(votekick.commands, clientHandler, serverHandler);
     commands.registerConsole(consoleCommands.commands, serverHandler);
     packetHandlers.loadPacketHandlers();
     // stored for limiting /reset frequency
