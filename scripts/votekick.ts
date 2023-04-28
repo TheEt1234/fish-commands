@@ -196,7 +196,7 @@ function check_if_votekick_valid_and_votekick(target:mindustryPlayer,votekicker:
 		outputSuccess("Sucesfully kicked yourself! Didn't even have to ask");votekicker.kick("Sucesfully kicked yourself! Didn't even have to ask!",0);return
 	}
 
-	const staff_is_there: mindustryPlayer = Groups.player.some(
+	const staff_is_there: mindustryPlayer = Groups.player.find(
 		(p: mindustryPlayer) => p.admin && !FishPlayer.get(p).afk
 	);
 
