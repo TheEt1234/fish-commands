@@ -127,7 +127,7 @@ function vote(player: mindustryPlayer, option: boolean) {
 		} ${
 			option ? "[scarlet]Yes[]" : "[green]No[]"
 		} on kicking ${getTargetName()} 
-${countVotes()}/${votekick_info.voteRequirement}`
+${countVotes()}/${votekick_info.voteRequirement}, use /vote y/n to vote`
 	);
 }
 
