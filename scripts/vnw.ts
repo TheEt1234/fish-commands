@@ -65,7 +65,7 @@ function start_vnw(playerToStartTheVote:mindustryPlayer,wavesToSkip:number,atOnc
     vnwData.voteRequirements=Math.floor(Groups.player.size()/2);
     vnwData.wavesToSkip=wavesToSkip;
     vnwData.atOnce=atOnce;
-    vnwData.votes=[playerToStartTheVote,true]
+    vnwData.votes=[[playerToStartTheVote,true]]
 
     Call.sendMessage("[lime]Notice me![]")
     Call.sendMessage(`${getPlayerNameHowIWant(playerToStartTheVote)} has started a vote for a new wave`)
@@ -81,12 +81,12 @@ function vote(who:mindustryPlayer,what:boolean){
         vote[1]=what;
     }
     if(!changedOpinion){
-        vnwData.votes.push([who,what])
+        vnwData.votes.push([[who,what]])
     }
     Call.sendMessage(
-`${getPlayerNameHowIWant(who)} ${changedOpinion?"has changed their opinion to ":"has said"} ${what?"[lime]yes":"[scarlet]No"} for skipping ${vnwData.wavesToSkip} waves`
+`${getPlayerNameHowIWant(who)} ${changedOpinion?"has changed their opinion to ":"has said"} ${what?"[lime]yes[]":"[scarlet]No[]"} for skipping ${vnwData.wavesToSkip} waves`
     )
-    Call.sendMessage("[lightgrey]You can vote by doing /vnw y/n")
+    Call.sendMessage(`${countVotes()}/${vnwData.voteRequirements} [lightgrey]You can vote by doing /vnw y/n`)
 
 }
 
@@ -114,7 +114,7 @@ function setupVoteTask(){
         const votes=countVotes()
         Call.sendMessage("[lime]VNW ENDED")
         if(votes>=vnwData.voteRequirements){
-            Call.sendMessage(`${vnwData.wavesToSkip} waves will be skipped ${vnwData.atOnce?"(at once)":0}`)
+            Call.sendMessage(`${vnwData.wavesToSkip} waves will be skipped ${vnwData.atOnce?"(at once)":"(normally)"}`)
             if(vnwData.atOnce){
                 for(let i=0;i<vnwData.wavesToSkip;i++){
                     Vars.logic.runWave()

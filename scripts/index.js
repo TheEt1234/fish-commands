@@ -16,6 +16,7 @@ var memberCommands = require("./memberCommands");
 var consoleCommands = require("./consoleCommands");
 var packetHandlers = require("./packetHandlers");
 var votekick = require("./votekick");
+var vnw = require("./vnw");
 var tileHistory = {};
 Events.on(EventType.PlayerJoin, function (e) {
     players_1.FishPlayer.onPlayerJoin(e.player);
@@ -79,8 +80,7 @@ Events.on(EventType.ServerLoadEvent, function (e) {
     commands.register(playerCommands.commands, clientHandler, serverHandler);
     commands.register(memberCommands.commands, clientHandler, serverHandler);
     commands.register(packetHandlers.commands, clientHandler, serverHandler);
-    Vars.netServer.clientCommands.removeCommand("votekick");
-    Vars.netServer.clientCommands.removeCommand("vote");
+    commands.register(vnw.commands, clientHandler, serverHandler);
     commands.register(votekick.commands, clientHandler, serverHandler);
     commands.registerConsole(consoleCommands.commands, serverHandler);
     packetHandlers.loadPacketHandlers();

@@ -52,7 +52,7 @@ function start_vnw(playerToStartTheVote, wavesToSkip, atOnce) {
     vnwData.voteRequirements = Math.floor(Groups.player.size() / 2);
     vnwData.wavesToSkip = wavesToSkip;
     vnwData.atOnce = atOnce;
-    vnwData.votes = [playerToStartTheVote, true];
+    vnwData.votes = [[playerToStartTheVote, true]];
     Call.sendMessage("[lime]Notice me![]");
     Call.sendMessage("".concat(getPlayerNameHowIWant(playerToStartTheVote), " has started a vote for a new wave"));
     Call.sendMessage("".concat(countVotes(), "/").concat(vnwData.voteRequirements, " [lightgrey]vote with /vnw"));
@@ -67,10 +67,10 @@ function vote(who, what) {
         vote_1[1] = what;
     }
     if (!changedOpinion) {
-        vnwData.votes.push([who, what]);
+        vnwData.votes.push([[who, what]]);
     }
-    Call.sendMessage("".concat(getPlayerNameHowIWant(who), " ").concat(changedOpinion ? "has changed their opinion to " : "has said", " ").concat(what ? "[lime]yes" : "[scarlet]No", " for skipping ").concat(vnwData.wavesToSkip, " waves"));
-    Call.sendMessage("[lightgrey]You can vote by doing /vnw y/n");
+    Call.sendMessage("".concat(getPlayerNameHowIWant(who), " ").concat(changedOpinion ? "has changed their opinion to " : "has said", " ").concat(what ? "[lime]yes[]" : "[scarlet]No[]", " for skipping ").concat(vnwData.wavesToSkip, " waves"));
+    Call.sendMessage("".concat(countVotes(), "/").concat(vnwData.voteRequirements, "[lightgrey]You can vote by doing /vnw y/n"));
 }
 function getPlayerNameHowIWant(player) {
     return "[#".concat(player.color, "]").concat(player.plainName(), "[]");
@@ -94,7 +94,7 @@ function setupVoteTask() {
         var votes = countVotes();
         Call.sendMessage("[lime]VNW ENDED");
         if (votes >= vnwData.voteRequirements) {
-            Call.sendMessage("".concat(vnwData.wavesToSkip, " waves will be skipped ").concat(vnwData.atOnce ? "(at once)" : 0));
+            Call.sendMessage("".concat(vnwData.wavesToSkip, " waves will be skipped ").concat(vnwData.atOnce ? "(at once)" : "(normally)"));
             if (vnwData.atOnce) {
                 for (var i = 0; i < vnwData.wavesToSkip; i++) {
                     Vars.logic.runWave();
