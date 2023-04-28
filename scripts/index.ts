@@ -15,6 +15,7 @@ import * as memberCommands from './memberCommands';
 import * as consoleCommands from "./consoleCommands";
 import * as packetHandlers from "./packetHandlers";
 import * as votekick from "./votekick"
+import * as vnw from "./vnw"
 import type { TileHistoryEntry } from "./types";
 
 
@@ -94,8 +95,7 @@ Events.on(EventType.ServerLoadEvent, (e) => {
 	commands.register(playerCommands.commands, clientHandler, serverHandler);
 	commands.register(memberCommands.commands, clientHandler, serverHandler);
 	commands.register(packetHandlers.commands, clientHandler, serverHandler);
-	Vars.netServer.clientCommands.removeCommand("votekick")
-	Vars.netServer.clientCommands.removeCommand("vote")
+	commands.register(vnw.commands ,clientHandler, serverHandler)
 	commands.register(votekick.commands, clientHandler, serverHandler)
 	commands.registerConsole(consoleCommands.commands, serverHandler);
 	packetHandlers.loadPacketHandlers();
