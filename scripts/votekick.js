@@ -12,14 +12,17 @@ exports.commands = void 0;
 var commands_1 = require("./commands");
 var players_1 = require("./players");
 var ranks_1 = require("./ranks");
+var api = require("./api");
+var voteDelay = 1 * 60;
+var requiredNumberOfPlayersToStartAVotekick = 0;
 var votekick_info = {
     voteIsInProgress: false,
     target: null,
     votekicker: null,
     votes: [],
     voteRequirement: 0,
+    votekickTask: null
 }; // balam im sorry
-var voteDelay = 1 * 60;
 //balam the .plainName() is there for a reason, it ensures that people cant render their name invisible by having [black] in it for example
 exports.commands = {
     votekick: {
@@ -30,42 +33,20 @@ exports.commands = {
         handler: function (_a) {
             var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail;
             var true_id = args.id.replace("#", "");
-            var staff_is_there = Groups.player.find(function (p) { return p.admin && !players_1.FishPlayer.get(p).afk; });
-            if (staff_is_there != null) {
-                outputFail("Staff is here, go ask them to stop that griefer");
-                return;
-            }
             if (!args.id.startsWith("#")) {
                 outputFail('Id must start with "#", if you\'re planning to votekick by name use votekick_name \nThis was done because vanilla mindustry tries to use /votekick with an id');
                 return;
             }
-            if (Object.is(Number(true_id), NaN)) {
+            if (Object.is(Number(true_id), NaN)) /*checks if the number is valid */ {
                 outputFail("The id isn't a number");
                 return;
             }
             var target = Groups.player.getByID(true_id);
-            if (target == sender.player) {
-                outputSuccess("Sucesfully kicked yourself! Didn't even have to ask");
-                sender.player.kick("Sucesfully kicked yourself! Didn't even have to ask!", 0);
-                return;
-            }
             if (target == null) {
                 outputFail("That player does not exist");
                 return;
             }
-            if (target.griefer) {
-                outputFail("They are already a griefer..");
-                return;
-            }
-            if (players_1.FishPlayer.get(Groups.player.getByID(true_id)).canModerate(sender, true)) {
-                outputFail("Do you seriously think that would work..");
-                return;
-            }
-            if (votekick_info.voteIsInProgress) {
-                outputFail("There is a votekick in progress");
-                return;
-            }
-            votekick(sender.player, target);
+            check_if_votekick_valid_and_votekick(target, sender.player, outputFail, outputSuccess);
         },
     },
     votekick_name: {
@@ -74,29 +55,7 @@ exports.commands = {
         perm: commands_1.Perm.notGriefer,
         handler: function (_a) {
             var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail;
-            if (args.target == sender) {
-                outputSuccess("Sucesfully kicked yourself! Didn't even have to ask");
-                sender.player.kick("Sucesfully kicked yourself! Didn't even have to ask!", 0);
-                return;
-            }
-            var staff_is_there = Groups.player.find(function (p) { return p.admin && !players_1.FishPlayer.get(p).afk; });
-            if (staff_is_there != null) {
-                outputFail("Staff is here, go ask them to stop that griefer");
-                return;
-            }
-            if (args.target.griefer) {
-                outputFail("They are already a griefer..");
-                return;
-            }
-            if (args.target.canModerate(sender, true)) {
-                outputFail("Do you seriously think that would work..");
-                return;
-            }
-            if (votekick_info.voteIsInProgress) {
-                outputFail("There is a votekick in progress");
-                return;
-            }
-            votekick(sender.player, args.target.player);
+            check_if_votekick_valid_and_votekick(args.target.player, sender.player, outputFail, outputSuccess);
         }
     },
     vote: {
@@ -107,6 +66,10 @@ exports.commands = {
             var args = _a.args, sender = _a.sender, outputFail = _a.outputFail;
             if (!votekick_info.voteIsInProgress) {
                 outputFail("There is no votekick to vote in");
+                return;
+            }
+            if (votekick_info.target == sender.player) {
+                outputFail("[scarlet]Can't vote on your own trial");
                 return;
             }
             var playerVote = args.yes_or_naw;
@@ -136,12 +99,14 @@ function vote(player, option) {
         if (votekick_info.votekicker == player) {
             Call.sendMessage("[scarlet]VOTE CANCELED BY THE VOTEKICKER[]");
             votekick_info.voteIsInProgress = false;
+            votekick_info.votekickTask.cancel();
+            players_1.FishPlayer.get(votekick_info.target).free("api");
             return;
         }
         votekick_info.votes[changed_opinion_vote_index][2] = option;
     }
     Call.sendMessage("[#".concat(player.color, "]").concat(player.plainName(), "[] has ").concat(changed_opinion
-        ? "changed their opinion on kicking the target and their new opinion is"
+        ? "[lime]changed their opinion on kicking the target and their new opinion is[]"
         : "voted", " ").concat(option ? "[scarlet]Yes[]" : "[green]No[]", " on kicking ").concat(getTargetName(), " \n").concat(countVotes(), "/").concat(votekick_info.voteRequirement));
 }
 function votekick(player, target) {
@@ -174,7 +139,7 @@ function getTargetName() {
     return "[#".concat(votekick_info.target.color, "]").concat(votekick_info.target.plainName(), "[]");
 }
 function make_result_anouncer() {
-    Timer.schedule(function () {
+    votekick_info.votekickTask = Timer.schedule(function () {
         Call.sendMessage("VOTEKICK RESULTS:\n ".concat(countVotes(), "/").concat(votekick_info.voteRequirement));
         if (countVotes() >= votekick_info.voteRequirement) {
             Call.sendMessage("".concat(getTargetName(), " will be stopped for 60 minutes"));
@@ -190,8 +155,41 @@ function timedStop(player, seconds) {
     player.stop("api");
     player.player.sendMessage("You've been stopped for " + seconds + " seconds");
     Timer.schedule(function () {
-        player.free("api"); // TODO: doesnt work when the player disconnects
-        //Thats like, really bad though
-        //could be solved with using the api free maybe?
+        player.free("api");
+        api.free(player.uuid); // TODO: doesnt work when the player disconnects
     }, seconds);
+}
+function check_if_votekick_valid_and_votekick(target, votekicker, outputFail, outputSuccess) {
+    /*
+        if(target==votekicker){
+            outputSuccess("Sucesfully kicked yourself! Didn't even have to ask");votekicker.kick("Sucesfully kicked yourself! Didn't even have to ask!",0);return
+        }
+    
+        const staff_is_there: mindustryPlayer = Groups.player.find(
+            (p: mindustryPlayer) => p.admin && !FishPlayer.get(p).afk
+        );
+    
+        if (staff_is_there != null) {
+            outputFail("Staff is here, go ask them to stop that griefer");
+            return;
+        }
+    */
+    var targetP = players_1.FishPlayer.get(target);
+    if (targetP.stopped) {
+        outputFail("They are already a griefer..");
+        return;
+    }
+    if (Groups.player.size() < requiredNumberOfPlayersToStartAVotekick) {
+        outputFail("At least 3 players are required to start a votekick, if a griefer is here use [blue]/discord[]");
+        return;
+    }
+    if (targetP.canModerate(players_1.FishPlayer.get(votekicker), true)) {
+        outputFail("Do you seriously think that would work..");
+        return;
+    }
+    if (votekick_info.voteIsInProgress) {
+        outputFail("There is a votekick in progress");
+        return;
+    }
+    votekick(votekicker, target);
 }

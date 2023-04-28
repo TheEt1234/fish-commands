@@ -11,21 +11,26 @@ import { Perm } from "./commands";
 import { FishPlayer } from "./players";
 import { Rank } from "./ranks";
 import { FishCommandsList } from "./types";
+import * as api from "./api";
 
+const voteDelay: number = 1 * 60;
+const requiredNumberOfPlayersToStartAVotekick:number=0
 let votekick_info: {
 	voteIsInProgress: boolean;
 	target: mindustryPlayer | null;
 	votekicker: mindustryPlayer | null;
 	votes: Array<Array<any>>;
 	voteRequirement: number;
+	votekickTask:any | null
 } = {
 	voteIsInProgress: false,
 	target: null,
 	votekicker: null,
 	votes: [],
 	voteRequirement: 0,
+	votekickTask:null
 }; // balam im sorry
-const voteDelay: number = 1 * 60;
+
 
 //balam the .plainName() is there for a reason, it ensures that people cant render their name invisible by having [black] in it for example
 
@@ -38,35 +43,22 @@ export const commands: FishCommandsList = {
 		perm: Perm.notGriefer,
 		handler({ args, sender, outputSuccess, outputFail }) {
 			const true_id: number = args.id.replace("#", "");
-			const staff_is_there: mindustryPlayer = Groups.player.find(
-				(p: mindustryPlayer) => p.admin && !FishPlayer.get(p).afk
-			);
-			if (staff_is_there != null) {
-				outputFail("Staff is here, go ask them to stop that griefer");
-				return;
-			}
 			if (!args.id.startsWith("#")) {
 				outputFail('Id must start with "#", if you\'re planning to votekick by name use votekick_name \nThis was done because vanilla mindustry tries to use /votekick with an id');
 				return;
 			}
-			if (Object.is(Number(true_id), NaN)) {
+			if (Object.is(Number(true_id),NaN))/*checks if the number is valid */ {
 				outputFail("The id isn't a number");
 				return;
 			}
 
 			const target: mindustryPlayer = Groups.player.getByID(true_id);
-            if(target==sender.player){outputSuccess("Sucesfully kicked yourself! Didn't even have to ask");sender.player.kick("Sucesfully kicked yourself! Didn't even have to ask!",0);return}
 			if (target == null) {
 				outputFail("That player does not exist");
 				return;
 			}
-            if(target.griefer){ outputFail("They are already a griefer..");return}
-            if(FishPlayer.get(Groups.player.getByID(true_id)).canModerate(sender,true)) {outputFail("Do you seriously think that would work..");return}
-			if (votekick_info.voteIsInProgress) {
-				outputFail("There is a votekick in progress");
-				return;
-			}
-			votekick(sender.player, target);
+
+            check_if_votekick_valid_and_votekick(target,sender.player,outputFail,outputSuccess)
 		},
 	},
     votekick_name:{
@@ -74,27 +66,8 @@ export const commands: FishCommandsList = {
         description:"Votekicks a player by name",
         perm: Perm.notGriefer,
         handler({args,sender,outputSuccess,outputFail}){
-            if(args.target==sender){
-                outputSuccess("Sucesfully kicked yourself! Didn't even have to ask");sender.player.kick("Sucesfully kicked yourself! Didn't even have to ask!",0);return
-            }
-            const staff_is_there: mindustryPlayer = Groups.player.find(
-				(p: mindustryPlayer) => p.admin && !FishPlayer.get(p).afk
-			);
-			if (staff_is_there != null) {
-				outputFail("Staff is here, go ask them to stop that griefer");
-				return;
-			}
-
-            if(args.target.griefer){ outputFail("They are already a griefer..");return}
-            if(args.target.canModerate(sender,true)) {outputFail("Do you seriously think that would work..");return}
-			if (votekick_info.voteIsInProgress) {
-				outputFail("There is a votekick in progress");
-				return;
-			}
-            votekick(sender.player,args.target.player)
-
+			check_if_votekick_valid_and_votekick(args.target.player,sender.player,outputFail,outputSuccess)
         }
-
     },
 
 	vote: {
@@ -102,8 +75,13 @@ export const commands: FishCommandsList = {
 		description: "Allows you to vote in a votekick",
 		perm: Perm.notGriefer,
 		handler({ args, sender, outputFail }) {
+
 			if (!votekick_info.voteIsInProgress) {
 				outputFail("There is no votekick to vote in");
+				return;
+			}
+			if(votekick_info.target==sender.player){
+				outputFail("[scarlet]Can't vote on your own trial");
 				return;
 			}
 			const playerVote: boolean = args.yes_or_naw;
@@ -116,10 +94,10 @@ export const commands: FishCommandsList = {
 //balam i'm again, sorry
 
 function vote(player: mindustryPlayer, option: boolean) {
-	let changed_opinion = false;
-	let changed_opinion_vote_index = 0;
+	let changed_opinion:boolean = false;
+	let changed_opinion_vote_index:number = 0;
 	for (let i = 0; i < votekick_info.votes.length; i++) {
-		const vote = votekick_info.votes[i];
+		const vote:Array<any> = votekick_info.votes[i];
 		if (vote[0] == player) {
 			changed_opinion = true;
 			changed_opinion_vote_index = i;
@@ -135,6 +113,8 @@ function vote(player: mindustryPlayer, option: boolean) {
         if(votekick_info.votekicker==player){
             Call.sendMessage("[scarlet]VOTE CANCELED BY THE VOTEKICKER[]")
             votekick_info.voteIsInProgress=false;
+			votekick_info.votekickTask.cancel();
+			FishPlayer.get(votekick_info.target).free("api")
             return
         }
 		votekick_info.votes[changed_opinion_vote_index][2] = option;
@@ -142,7 +122,7 @@ function vote(player: mindustryPlayer, option: boolean) {
 	Call.sendMessage(
 		`[#${player.color}]${player.plainName()}[] has ${
 			changed_opinion
-				? "changed their opinion on kicking the target and their new opinion is"
+				? "[lime]changed their opinion on kicking the target and their new opinion is[]"
 				: "voted"
 		} ${
 			option ? "[scarlet]Yes[]" : "[green]No[]"
@@ -188,10 +168,8 @@ function getTargetName() {
 }
 
 function make_result_anouncer(){
-	Timer.schedule(() => {
-		Call.sendMessage(
-			`VOTEKICK RESULTS:\n ${countVotes()}/${votekick_info.voteRequirement}`
-		);
+	votekick_info.votekickTask=Timer.schedule(() => {
+		Call.sendMessage(`VOTEKICK RESULTS:\n ${countVotes()}/${votekick_info.voteRequirement}`);
 		if (countVotes() >= votekick_info.voteRequirement) {
 			Call.sendMessage(`${getTargetName()} will be stopped for 60 minutes`);
             timedStop(FishPlayer.get(votekick_info.target),60*60)
@@ -207,8 +185,41 @@ function timedStop(player:FishPlayer,seconds:number){
     player.stop("api")
     player.player.sendMessage("You've been stopped for "+seconds+" seconds")
     Timer.schedule(()=>{
-        player.free("api") // TODO: doesnt work when the player disconnects
-        //Thats like, really bad though
-        //could be solved with using the api free maybe?
+        player.free("api")
+		api.free(player.uuid) 
     },seconds)
+}
+
+function check_if_votekick_valid_and_votekick(target:mindustryPlayer,votekicker:mindustryPlayer,outputFail:any,outputSuccess:any){
+/*
+	if(target==votekicker){
+		outputSuccess("Sucesfully kicked yourself! Didn't even have to ask");votekicker.kick("Sucesfully kicked yourself! Didn't even have to ask!",0);return
+	}
+
+	const staff_is_there: mindustryPlayer = Groups.player.some(
+		(p: mindustryPlayer) => p.admin && !FishPlayer.get(p).afk
+	);
+
+	if (staff_is_there != null) {
+		outputFail("Staff is here, go ask them to stop that griefer");
+		return;
+	}
+*/
+	const targetP:FishPlayer=FishPlayer.get(target)
+	if(targetP.stopped){
+		outputFail("They are already a griefer..");
+		return;
+	}
+	if(Groups.player.size()<requiredNumberOfPlayersToStartAVotekick){
+		outputFail("At least 3 players are required to start a votekick, if a griefer is here use [blue]/discord[]");
+		return;
+	}
+
+	if(targetP.canModerate(FishPlayer.get(votekicker),true)) {outputFail("Do you seriously think that would work..");return}
+	if (votekick_info.voteIsInProgress) {
+		outputFail("There is a votekick in progress");
+		return;
+	}
+	votekick(votekicker,target)
+
 }
