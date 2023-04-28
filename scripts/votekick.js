@@ -14,7 +14,7 @@ var players_1 = require("./players");
 var ranks_1 = require("./ranks");
 var api = require("./api");
 var voteDelay = 1 * 60;
-var requiredNumberOfPlayersToStartAVotekick = 0;
+var requiredNumberOfPlayersToStartAVotekick = 3;
 var votekick_info = {
     voteIsInProgress: false,
     target: null,
@@ -107,7 +107,7 @@ function vote(player, option) {
     }
     Call.sendMessage("[#".concat(player.color, "]").concat(player.plainName(), "[] has ").concat(changed_opinion
         ? "[lime]changed their opinion on kicking the target and their new opinion is[]"
-        : "voted", " ").concat(option ? "[scarlet]Yes[]" : "[green]No[]", " on kicking ").concat(getTargetName(), " \n").concat(countVotes(), "/").concat(votekick_info.voteRequirement));
+        : "voted", " ").concat(option ? "[scarlet]Yes[]" : "[green]No[]", " on kicking ").concat(getTargetName(), " \n").concat(countVotes(), "/").concat(votekick_info.voteRequirement, ", use /vote y/n to vote"));
 }
 function votekick(player, target) {
     votekick_info.voteIsInProgress = true;
@@ -156,24 +156,20 @@ function timedStop(player, seconds) {
     player.player.sendMessage("You've been stopped for " + seconds + " seconds");
     Timer.schedule(function () {
         player.free("api");
-        api.free(player.uuid); // TODO: doesnt work when the player disconnects
+        api.free(player.uuid);
     }, seconds);
 }
 function check_if_votekick_valid_and_votekick(target, votekicker, outputFail, outputSuccess) {
-    /*
-        if(target==votekicker){
-            outputSuccess("Sucesfully kicked yourself! Didn't even have to ask");votekicker.kick("Sucesfully kicked yourself! Didn't even have to ask!",0);return
-        }
-    
-        const staff_is_there: mindustryPlayer = Groups.player.find(
-            (p: mindustryPlayer) => p.admin && !FishPlayer.get(p).afk
-        );
-    
-        if (staff_is_there != null) {
-            outputFail("Staff is here, go ask them to stop that griefer");
-            return;
-        }
-    */
+    if (target == votekicker) {
+        outputSuccess("Sucesfully kicked yourself! Didn't even have to ask");
+        votekicker.kick("Sucesfully kicked yourself! Didn't even have to ask!", 0);
+        return;
+    }
+    var staff_is_there = Groups.player.find(function (p) { return p.admin && !players_1.FishPlayer.get(p).afk; });
+    if (staff_is_there != null) {
+        outputFail("Staff is here, go ask them to stop that griefer");
+        return;
+    }
     var targetP = players_1.FishPlayer.get(target);
     if (targetP.stopped) {
         outputFail("They are already a griefer..");
