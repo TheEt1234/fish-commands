@@ -14,7 +14,7 @@ import { FishCommandsList } from "./types";
 import * as api from "./api";
 
 const voteDelay: number = 1 * 60;
-const requiredNumberOfPlayersToStartAVotekick:number=0
+const requiredNumberOfPlayersToStartAVotekick:number=3
 let votekick_info: {
 	voteIsInProgress: boolean;
 	target: mindustryPlayer | null;
@@ -191,7 +191,7 @@ function timedStop(player:FishPlayer,seconds:number){
 }
 
 function check_if_votekick_valid_and_votekick(target:mindustryPlayer,votekicker:mindustryPlayer,outputFail:any,outputSuccess:any){
-/*
+
 	if(target==votekicker){
 		outputSuccess("Sucesfully kicked yourself! Didn't even have to ask");votekicker.kick("Sucesfully kicked yourself! Didn't even have to ask!",0);return
 	}
@@ -204,7 +204,7 @@ function check_if_votekick_valid_and_votekick(target:mindustryPlayer,votekicker:
 		outputFail("Staff is here, go ask them to stop that griefer");
 		return;
 	}
-*/
+
 	const targetP:FishPlayer=FishPlayer.get(target)
 	if(targetP.stopped){
 		outputFail("They are already a griefer..");
