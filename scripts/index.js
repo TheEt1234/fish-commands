@@ -45,6 +45,7 @@ var timers = require("./timers");
 var utils_1 = require("./utils");
 =======
 var votekick = require("./votekick");
+var vnw = require("./vnw");
 var tileHistory = {};
 >>>>>>> 430d816 (Added votekick)
 Events.on(EventType.PlayerJoin, function (e) {
@@ -110,8 +111,7 @@ Events.on(EventType.ServerLoadEvent, function (e) {
     commands.register(playerCommands.commands, clientHandler, serverHandler);
     commands.register(memberCommands.commands, clientHandler, serverHandler);
     commands.register(packetHandlers.commands, clientHandler, serverHandler);
-    Vars.netServer.clientCommands.removeCommand("votekick");
-    Vars.netServer.clientCommands.removeCommand("vote");
+    commands.register(vnw.commands, clientHandler, serverHandler);
     commands.register(votekick.commands, clientHandler, serverHandler);
     commands.registerConsole(consoleCommands.commands, serverHandler);
     packetHandlers.loadPacketHandlers();

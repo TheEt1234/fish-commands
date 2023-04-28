@@ -212,6 +212,7 @@ function processArgs(args, processedCmdArgs, allowMenus) {
                         case "f":
                         case "n":
                         case "0":
+                        case "na":
                             outputArgs[cmdArg.name] = false;
                             break;
                         default: return { error: "Argument ".concat(args[i], " is not a boolean. Try \"true\" or \"false\".") };
