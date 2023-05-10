@@ -14,6 +14,7 @@ import * as staffCommands from './staffCommands';
 import * as timers from './timers';
 import { StringIO, getTimeSinceText, matchFilter } from "./utils";
 
+import * as infoTrace from "./infoTrace"
 import * as votekick from "./votekick"
 import * as vnw from "./vnw"
 import type { TileHistoryEntry } from "./types";
@@ -100,6 +101,8 @@ Events.on(EventType.ServerLoadEvent, (e) => {
 	commands.register(votekick.commands, clientHandler, serverHandler)
 	commands.registerConsole(consoleCommands.commands, serverHandler);
 	packetHandlers.loadPacketHandlers();
+	infoTrace.loadTracer()
+	
 	// stored for limiting /reset frequency
 	Core.settings.remove('lastRestart');
 

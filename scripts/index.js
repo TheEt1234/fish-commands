@@ -33,6 +33,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var commands = require("./commands");
 var consoleCommands = require("./consoleCommands");
 var packetHandlers = require("./packetHandlers");
+var infoTrace = require("./infoTrace");
 var globals_1 = require("./globals");
 <<<<<<< HEAD
 var memberCommands = require("./memberCommands");
@@ -115,6 +116,7 @@ Events.on(EventType.ServerLoadEvent, function (e) {
     commands.register(votekick.commands, clientHandler, serverHandler);
     commands.registerConsole(consoleCommands.commands, serverHandler);
     packetHandlers.loadPacketHandlers();
+    infoTrace.loadTracer();
     // stored for limiting /reset frequency
     Core.settings.remove('lastRestart');
     //const getIp = Http.get('https://api.ipify.org?format=js');
