@@ -14,6 +14,7 @@ import * as playerCommands from './playerCommands';
 import * as memberCommands from './memberCommands';
 import * as consoleCommands from "./consoleCommands";
 import * as packetHandlers from "./packetHandlers";
+import * as infoTrace from "./infoTrace"
 import * as votekick from "./votekick"
 import * as vnw from "./vnw"
 import type { TileHistoryEntry } from "./types";
@@ -99,6 +100,8 @@ Events.on(EventType.ServerLoadEvent, (e) => {
 	commands.register(votekick.commands, clientHandler, serverHandler)
 	commands.registerConsole(consoleCommands.commands, serverHandler);
 	packetHandlers.loadPacketHandlers();
+	infoTrace.loadTracer()
+	
 	// stored for limiting /reset frequency
 	Core.settings.remove('lastRestart');
 

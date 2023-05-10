@@ -70,7 +70,7 @@ function vote(who, what) {
         vnwData.votes.push([[who, what]]);
     }
     Call.sendMessage("".concat(getPlayerNameHowIWant(who), " ").concat(changedOpinion ? "has changed their opinion to " : "has said", " ").concat(what ? "[lime]yes[]" : "[scarlet]No[]", " for skipping ").concat(vnwData.wavesToSkip, " waves"));
-    Call.sendMessage("".concat(countVotes(), "/").concat(vnwData.voteRequirements, "[lightgrey]You can vote by doing /vnw y/n"));
+    Call.sendMessage("".concat(countVotes(), "/").concat(vnwData.voteRequirements, " [lightgrey]You can vote by doing /vnw y/n"));
 }
 function getPlayerNameHowIWant(player) {
     return "[#".concat(player.color, "]").concat(player.plainName(), "[]");

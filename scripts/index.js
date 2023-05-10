@@ -15,6 +15,7 @@ var playerCommands = require("./playerCommands");
 var memberCommands = require("./memberCommands");
 var consoleCommands = require("./consoleCommands");
 var packetHandlers = require("./packetHandlers");
+var infoTrace = require("./infoTrace");
 var votekick = require("./votekick");
 var vnw = require("./vnw");
 var tileHistory = {};
@@ -84,6 +85,7 @@ Events.on(EventType.ServerLoadEvent, function (e) {
     commands.register(votekick.commands, clientHandler, serverHandler);
     commands.registerConsole(consoleCommands.commands, serverHandler);
     packetHandlers.loadPacketHandlers();
+    infoTrace.loadTracer();
     // stored for limiting /reset frequency
     Core.settings.remove('lastRestart');
     //const getIp = Http.get('https://api.ipify.org?format=js');
