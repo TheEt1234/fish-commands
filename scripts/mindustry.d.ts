@@ -130,6 +130,7 @@ interface PlayerAction {
 	player:mindustryPlayer;
 	type:ActionType;
 	tile:Tile | null;
+	config:any | null;
 }
 type ActionType = any;
 declare const ActionType:Record<string, ActionType>;

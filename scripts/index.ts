@@ -18,6 +18,7 @@ import * as infoTrace from "./infoTrace"
 import * as votekick from "./votekick"
 import * as vnw from "./vnw"
 import type { TileHistoryEntry } from "./types";
+import * as unitBuild from "./unitBuild";
 
 
 let tileHistory:Record<string, TileHistoryEntry[]> = {};
@@ -40,6 +41,7 @@ Events.on(EventType.ServerLoadEvent, (e) => {
 	const serverHandler = Core.app.listeners.find(
 		(l) => l instanceof Packages.mindustry.server.ServerControl
 	).handler;
+	const processors=[Blocks.microProcessor, Blocks.logicProcessor, Blocks.hyperProcessor]
 
 	FishPlayer.loadAll();
 	timers.initializeTimers();
@@ -85,12 +87,12 @@ Events.on(EventType.ServerLoadEvent, (e) => {
 					breaking: null,
 				}, 'rotate');
 			}
-			return true;
+			return true
 		}
+
 
 		
 	});
-
 
 	commands.register(staffCommands.commands, clientHandler, serverHandler);
 	commands.register(playerCommands.commands, clientHandler, serverHandler);
@@ -101,6 +103,8 @@ Events.on(EventType.ServerLoadEvent, (e) => {
 	commands.registerConsole(consoleCommands.commands, serverHandler);
 	packetHandlers.loadPacketHandlers();
 	infoTrace.loadTracer()
+	unitBuild.validateUnitBuild()
+	
 	
 	// stored for limiting /reset frequency
 	Core.settings.remove('lastRestart');
@@ -115,6 +119,9 @@ Events.on(EventType.ServerLoadEvent, (e) => {
  * Keeps track of any action performed on a tile for use in /tilelog
  * command.
  */
+
+
+
 function addToTileHistory(e:any, eventType:"build" | "rotate"){
 	const unit = e.unit;
 	if(!unit.player) return;
