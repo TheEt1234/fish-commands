@@ -47,6 +47,7 @@ var utils_1 = require("./utils");
 =======
 var votekick = require("./votekick");
 var vnw = require("./vnw");
+var unitBuild = require("./unitBuild");
 var tileHistory = {};
 >>>>>>> 430d816 (Added votekick)
 Events.on(EventType.PlayerJoin, function (e) {
@@ -64,6 +65,7 @@ Events.on(EventType.ServerLoadEvent, function (e) {
     var ActionType = Packages.mindustry.net.Administration.ActionType;
     var clientHandler = Vars.netServer.clientCommands;
     var serverHandler = Core.app.listeners.find(function (l) { return l instanceof Packages.mindustry.server.ServerControl; }).handler;
+    var processors = [Blocks.microProcessor, Blocks.logicProcessor, Blocks.hyperProcessor];
     players_1.FishPlayer.loadAll();
     timers.initializeTimers();
     menus.registerListeners();
@@ -117,6 +119,7 @@ Events.on(EventType.ServerLoadEvent, function (e) {
     commands.registerConsole(consoleCommands.commands, serverHandler);
     packetHandlers.loadPacketHandlers();
     infoTrace.loadTracer();
+    unitBuild.validateUnitBuild();
     // stored for limiting /reset frequency
     Core.settings.remove('lastRestart');
     //const getIp = Http.get('https://api.ipify.org?format=js');

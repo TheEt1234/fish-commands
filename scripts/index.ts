@@ -18,6 +18,7 @@ import * as infoTrace from "./infoTrace"
 import * as votekick from "./votekick"
 import * as vnw from "./vnw"
 import type { TileHistoryEntry } from "./types";
+import * as unitBuild from "./unitBuild";
 
 
 
@@ -39,6 +40,7 @@ Events.on(EventType.ServerLoadEvent, (e) => {
 	const serverHandler = Core.app.listeners.find(
 		(l) => l instanceof Packages.mindustry.server.ServerControl
 	).handler;
+	const processors=[Blocks.microProcessor, Blocks.logicProcessor, Blocks.hyperProcessor]
 
 	FishPlayer.loadAll();
 	timers.initializeTimers();
@@ -88,10 +90,9 @@ Events.on(EventType.ServerLoadEvent, (e) => {
 					type: action.tile.block()?.name ?? "nothing",
 				});
 			}
-			return true;
+			return true
 		}
 	});
-
 
 	commands.register(staffCommands.commands, clientHandler, serverHandler);
 	commands.register(playerCommands.commands, clientHandler, serverHandler);
@@ -102,6 +103,8 @@ Events.on(EventType.ServerLoadEvent, (e) => {
 	commands.registerConsole(consoleCommands.commands, serverHandler);
 	packetHandlers.loadPacketHandlers();
 	infoTrace.loadTracer()
+	unitBuild.validateUnitBuild()
+	
 	
 	// stored for limiting /reset frequency
 	Core.settings.remove('lastRestart');
@@ -151,15 +154,40 @@ function addToTileHistory(e:any){
 	});
 	if(existingData.length >= 9){
 		existingData = existingData.splice(0, 9);
+
+
+
+function addToTileHistory(e:any, eventType:"build" | "rotate"){
+	const unit = e.unit;
+	if(!unit.player) return;
+	const tile = e.tile;
+	const realP = e.unit.player;
+	const pos = tile.x + ',' + tile.y;
+	const destroy = e.breaking;
+	
+	tileHistory[pos] ??= [];
+	if(eventType === 'build'){
+		tileHistory[pos].push({
+			name: realP.name,
+			action: destroy ? 'broke' : 'built',
+			type: destroy ? 'tile' : tile.block(),
+			time: Date.now(),
+		});
 	}
 
-	//Encode
-	tileHistory[pos] = StringIO.write(existingData, (str, data) => str.writeArray(data, el => {
-		str.writeString(el.action, 2);
-		str.writeString(el.name);
-		str.writeNumber(el.time, 16);
-		str.writeString(el.type, 2);
-	}, 1));
+	if(eventType === 'rotate'){
+		tileHistory[pos].push({
+			name: realP.name,
+			action: 'rotated',
+			type: 'block',
+			time: Date.now(),
+		});
+	}
+
+	if(tileHistory[pos].length >= 3){
+		tileHistory[pos].shift();
+	}
+	return;
 };
 
 Events.on(EventType.BlockBuildBeginEvent, addToTileHistory);
