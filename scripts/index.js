@@ -48,6 +48,7 @@ var utils_1 = require("./utils");
 var votekick = require("./votekick");
 var vnw = require("./vnw");
 var unitBuild = require("./unitBuild");
+var nerds = require("./nerd");
 var tileHistory = {};
 >>>>>>> 430d816 (Added votekick)
 Events.on(EventType.PlayerJoin, function (e) {
@@ -120,6 +121,7 @@ Events.on(EventType.ServerLoadEvent, function (e) {
     packetHandlers.loadPacketHandlers();
     infoTrace.loadTracer();
     unitBuild.validateUnitBuild();
+    nerds.nerdApocalipse();
     // stored for limiting /reset frequency
     Core.settings.remove('lastRestart');
     //const getIp = Http.get('https://api.ipify.org?format=js');
