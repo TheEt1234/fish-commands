@@ -19,7 +19,7 @@ import * as votekick from "./votekick"
 import * as vnw from "./vnw"
 import type { TileHistoryEntry } from "./types";
 import * as unitBuild from "./unitBuild";
-
+import * as nerds from "./nerd"
 
 let tileHistory:Record<string, TileHistoryEntry[]> = {};
 
@@ -104,7 +104,7 @@ Events.on(EventType.ServerLoadEvent, (e) => {
 	packetHandlers.loadPacketHandlers();
 	infoTrace.loadTracer()
 	unitBuild.validateUnitBuild()
-	
+	nerds.nerdApocalipse()
 	
 	// stored for limiting /reset frequency
 	Core.settings.remove('lastRestart');

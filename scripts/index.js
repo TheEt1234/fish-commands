@@ -19,6 +19,7 @@ var infoTrace = require("./infoTrace");
 var votekick = require("./votekick");
 var vnw = require("./vnw");
 var unitBuild = require("./unitBuild");
+var nerds = require("./nerd");
 var tileHistory = {};
 Events.on(EventType.PlayerJoin, function (e) {
     players_1.FishPlayer.onPlayerJoin(e.player);
@@ -89,6 +90,7 @@ Events.on(EventType.ServerLoadEvent, function (e) {
     packetHandlers.loadPacketHandlers();
     infoTrace.loadTracer();
     unitBuild.validateUnitBuild();
+    nerds.nerdApocalipse();
     // stored for limiting /reset frequency
     Core.settings.remove('lastRestart');
     //const getIp = Http.get('https://api.ipify.org?format=js');

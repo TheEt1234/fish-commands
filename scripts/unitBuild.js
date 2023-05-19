@@ -6,10 +6,11 @@ var ranks_1 = require("./ranks");
 var ActionType = Packages.mindustry.net.Administration.ActionType;
 var validateUnitBuild = function () {
     Vars.netServer.admins.addActionFilter(function (action) {
-        if (action.type == ActionType.configure) {
+        if (action.type == ActionType.configure) { //fires on logic build too
             var player_1 = action.player;
             var tile_1 = action.tile;
             Core.app.post(function () {
+                //explenation: the config gives you bullshit bytes, which i can't figure out how to convert to a string, so i just use this scuffed method of getting the future tile
                 try {
                     validateProcessor(tile_1, player_1);
                 }
