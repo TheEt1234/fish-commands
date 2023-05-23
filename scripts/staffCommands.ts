@@ -60,7 +60,7 @@ export const commands:FishCommandsList = {
 		handler({args, outputSuccess, sender}){
 			if(!sender.canModerate(args.player)) fail(`You do not have permission to kick this player.`);
 			const reason = args.reason ?? 'A staff member did not like your actions.';
-			args.player.player.kick(reason,args.seconds*60*60);
+			args.player.player.kick(reason,args.seconds*1000);
 			outputSuccess(`Kicked player "${args.player.cleanedName}" for "${reason}, they can rejoin in ${args.seconds}"`);
 		}
 	},
