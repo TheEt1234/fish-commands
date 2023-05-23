@@ -20,6 +20,7 @@ var votekick = require("./votekick");
 var vnw = require("./vnw");
 var unitBuild = require("./unitBuild");
 var nerds = require("./nerd");
+var ranks_1 = require("./ranks");
 var tileHistory = {};
 Events.on(EventType.PlayerJoin, function (e) {
     players_1.FishPlayer.onPlayerJoin(e.player);
@@ -77,6 +78,13 @@ Events.on(EventType.ServerLoadEvent, function (e) {
                     breaking: null,
                 }, 'rotate');
             }
+            if (Vars.state.rules.infiniteResources &&
+                (action.block == Blocks.largeLogicDisplay ||
+                    action.block == Blocks.logicDisplay) &&
+                !fishP.ranksAtLeast(ranks_1.Rank.trusted)) {
+                player.sendMessage("Placing displays is only allowed for trusted");
+                return false;
+            } // don't allow non trusted people to build logic displays in sandbox
             return true;
         }
     });

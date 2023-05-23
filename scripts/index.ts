@@ -20,6 +20,7 @@ import * as vnw from "./vnw"
 import type { TileHistoryEntry } from "./types";
 import * as unitBuild from "./unitBuild";
 import * as nerds from "./nerd"
+import { Rank } from "./ranks";
 
 let tileHistory:Record<string, TileHistoryEntry[]> = {};
 
@@ -87,10 +88,14 @@ Events.on(EventType.ServerLoadEvent, (e) => {
 					breaking: null,
 				}, 'rotate');
 			}
+			if(
+				Vars.state.rules.infiniteResources&&
+				(action.block==Blocks.largeLogicDisplay||
+				action.block==Blocks.logicDisplay)&&
+				!fishP.ranksAtLeast(Rank.trusted)
+				) {player.sendMessage("Placing displays is only allowed for trusted");return false} // don't allow non trusted people to build logic displays in sandbox
 			return true
 		}
-
-
 		
 	});
 

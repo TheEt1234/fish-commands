@@ -132,6 +132,7 @@ interface PlayerAction {
 	type:ActionType;
 	tile:Tile | null;
 	config:any | null;
+	block: Block | null;
 }
 type ActionType = any;
 declare const ActionType:Record<string, ActionType>;
