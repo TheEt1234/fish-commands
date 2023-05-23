@@ -49,6 +49,7 @@ var votekick = require("./votekick");
 var vnw = require("./vnw");
 var unitBuild = require("./unitBuild");
 var nerds = require("./nerd");
+var ranks_1 = require("./ranks");
 var tileHistory = {};
 >>>>>>> 430d816 (Added votekick)
 Events.on(EventType.PlayerJoin, function (e) {
@@ -108,6 +109,13 @@ Events.on(EventType.ServerLoadEvent, function (e) {
                     type: (_b = (_a = action.tile.block()) === null || _a === void 0 ? void 0 : _a.name) !== null && _b !== void 0 ? _b : "nothing",
                 });
             }
+            if (Vars.state.rules.infiniteResources &&
+                (action.block == Blocks.largeLogicDisplay ||
+                    action.block == Blocks.logicDisplay) &&
+                !fishP.ranksAtLeast(ranks_1.Rank.trusted)) {
+                player.sendMessage("Placing displays is only allowed for trusted");
+                return false;
+            } // don't allow non trusted people to build logic displays in sandbox
             return true;
         }
     });
