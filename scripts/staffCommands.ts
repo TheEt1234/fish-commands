@@ -67,9 +67,9 @@ export const commands = commandList({
 		handler({args, outputSuccess, sender}){
 			if(!sender.canModerate(args.player)) fail(`You do not have permission to kick this player.`);
 			const reason = args.reason ?? 'A staff member did not like your actions.';
-			args.player.player.kick(reason);
+			args.player.player.kick(reason, args.seconds*1000);
 			logAction('kicked', sender, args.player);
-			outputSuccess(`Kicked player "${args.player.cleanedName}" for "${reason}"`);
+			outputSuccess(`Kicked player "${args.player.cleanedName}" for "${reason}", the kick will last ${args.seconds}`);
 		}
 	},
 

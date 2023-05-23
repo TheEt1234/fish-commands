@@ -17,6 +17,7 @@ function initializeTimers() {
     //Trails
     Timer.schedule(function () { return players_1.FishPlayer.forEachPlayer(function (p) { return p.displayTrail(); }); }, 5, 0.15);
     //Staff chat
+<<<<<<< HEAD
     if (!config.localDebug)
         Timer.schedule(function () {
             (0, api_1.getStaffMessages)(function (messages) {
@@ -24,5 +25,33 @@ function initializeTimers() {
                     players_1.FishPlayer.messageStaff(messages);
             });
         }, 5, 3);
+=======
+    Timer.schedule(function () {
+        (0, api_1.getStaffMessages)(function (messages) {
+            if (!messages.length)
+                return;
+            players_1.FishPlayer.messageStaff(messages);
+        });
+    }, 5, 3);
+    //Replacing blacklisting with a kick 
+    //because blacklisting causes problems for administration
+    Timer.schedule(function () {
+        try {
+            var blacklist_1 = Vars.netServer.admins.dosBlacklist;
+            var admins_1 = Vars.netServer.admins;
+            if (blacklist_1.isEmpty())
+                return;
+            blacklist_1.forEach(function (b) {
+                var ips = admins_1.findByIPs(b);
+                admins_1.handleKicked(ips.get(ips.size - 1), b, 60 * 1000);
+                Log.info("Unblacklisted, but kicked for one minute this fella: " + b);
+                blacklist_1.remove(b);
+            });
+        }
+        catch (e) {
+            Log.info(e);
+        }
+    }, 3.15, 2);
+>>>>>>> 7674a8e (Replaced blacklisting with kicking)
 }
 exports.initializeTimers = initializeTimers;

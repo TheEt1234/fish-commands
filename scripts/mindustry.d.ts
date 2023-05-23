@@ -142,6 +142,7 @@ declare class ObjectSet<T> {
 	contains(item:T):boolean;
 	get(key:T):T;
 	first():T;
+	forEach(func:(thing:T) => void):void //inherited from java.lang.Iterable
 }
 declare class EntityGroup<T> {
 	copy(seq:Seq<T>):Seq<T>;
@@ -157,7 +158,7 @@ declare class EntityGroup<T> {
 declare function importPackage(package:any):void;
 declare const Packages: Record<string, any>;
 declare const EventType: Record<string, EventType>;
-type EventType = any;
+type EventType = any;``
 interface PlayerAction {
 	player:mindustryPlayer;
 	type:ActionType;

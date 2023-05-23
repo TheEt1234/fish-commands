@@ -78,7 +78,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
             if (!sender.canModerate(args.player))
                 (0, commands_1.fail)("You do not have permission to kick this player.");
             var reason = (_b = args.reason) !== null && _b !== void 0 ? _b : 'A staff member did not like your actions.';
-            args.player.player.kick(reason);
+            args.player.player.kick(reason, args.seconds*1000);
             (0, utils_1.logAction)('kicked', sender, args.player);
             outputSuccess("Kicked player \"".concat(args.player.cleanedName, "\" for \"").concat(reason, "\""));
         }

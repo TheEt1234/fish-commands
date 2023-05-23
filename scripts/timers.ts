@@ -29,5 +29,26 @@ export function initializeTimers(){
 			getStaffMessages((messages) => {
 				if(messages.length) FishPlayer.messageStaff(messages);
 			})
-		}, 5, 3);
+		},
+		5,
+		3
+	);
+	//Replacing blacklisting with a kick 
+	//because blacklisting causes problems for administration
+	Timer.schedule(
+		() => { try{
+				const blacklist:ObjectSet<string>=Vars.netServer.admins.dosBlacklist
+				const admins=Vars.netServer.admins
+				if(blacklist.isEmpty()) return;
+				blacklist.forEach((b:string) => {
+					const ips:ObjectSet<any>=admins.findByIPs(b)
+					admins.handleKicked(ips.get(ips.size-1),b,60*1000)
+					Log.info("Unblacklisted, but kicked for one minute this fella: "+b)
+					blacklist.remove(b)
+				});
+			}catch(e:any){Log.info(e)}
+		},
+		3.15,
+		2
+	)
 }
