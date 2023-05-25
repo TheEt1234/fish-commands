@@ -315,7 +315,9 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 		return true;
 	}
 	displayTrail(){
-		if(this.trail) Call.effect(Fx[this.trail.type], this.player.x, this.player.y, 0, this.trail.color);
+ 		if(this.trail){
+			if(this.trail.type!="custom")  Call.effect(Fx[this.trail.type], this.player.x, this.player.y, 0, this.trail.color);
+		}
 	}
 	sendWelcomeMessage(){
 		if(this.marked()) this.sendMessage(

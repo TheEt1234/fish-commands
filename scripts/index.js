@@ -47,6 +47,7 @@ var utils_1 = require("./utils");
 =======
 var votekick = require("./votekick");
 var vnw = require("./vnw");
+var animtrail = require("./animtrail");
 var unitBuild = require("./unitBuild");
 var nerds = require("./nerd");
 var ranks_1 = require("./ranks");
@@ -125,6 +126,8 @@ Events.on(EventType.ServerLoadEvent, function (e) {
     commands.register(packetHandlers.commands, clientHandler, serverHandler);
     commands.register(vnw.commands, clientHandler, serverHandler);
     commands.register(votekick.commands, clientHandler, serverHandler);
+    commands.register(animtrail.commands, clientHandler, serverHandler);
+    animtrail.startIncrementingTheFrame();
     commands.registerConsole(consoleCommands.commands, serverHandler);
     packetHandlers.loadPacketHandlers();
     infoTrace.loadTracer();
