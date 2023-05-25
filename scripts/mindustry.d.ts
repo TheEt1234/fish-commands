@@ -61,6 +61,12 @@ declare const Align: {
 declare const Groups: any;
 declare class Vec2 {
 	constructor(x:number, y:number);
+	set(x:number,y:number):Vec2
+	set(vector:Vec2):Vec2
+	add(x:number,y:number):Vec2
+	add(vector:Vec2) :Vec2
+	x:number
+	y:number
 }
 /* mindustry.gen.Player */
 declare type mindustryPlayer = any;
@@ -72,6 +78,7 @@ declare class Color {
 	constructor(r:number, g:number, b:number, a:number);
 	constructor(color:Color);
 	static valueOf(string:string):Color;
+	lerp(color:Color,to:number);
 }
 declare const Core: {
 	settings: {
