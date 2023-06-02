@@ -197,7 +197,7 @@ function check_if_votekick_valid_and_votekick(target:mindustryPlayer,votekicker:
 	}
 
 	const staff_is_there: mindustryPlayer = Groups.player.find(
-		(p: mindustryPlayer) => p.admin && !FishPlayer.get(p).afk
+		(p: mindustryPlayer) => p.admin && !FishPlayer.get(p).hasFlag("afk")
 	);
 
 	if (staff_is_there != null) {

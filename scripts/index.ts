@@ -13,7 +13,6 @@ import { FishPlayer } from './players';
 import * as staffCommands from './staffCommands';
 import * as timers from './timers';
 import { StringIO, getTimeSinceText, matchFilter } from "./utils";
-
 import * as infoTrace from "./infoTrace"
 import * as votekick from "./votekick"
 import * as vnw from "./vnw"
@@ -129,6 +128,11 @@ Events.on(EventType.ServerLoadEvent, (e) => {
  * Keeps track of any action performed on a tile for use in /tilelog
  * command.
  */
+
+/**
+ * Keeps track of any action performed on a tile for use in /tilelog
+ * command.
+ */
 function addToTileHistory(e:any){
 
 	let pos:string, name:string, action:string, type:string, time:number = Date.now();
@@ -164,41 +168,18 @@ function addToTileHistory(e:any){
 	});
 	if(existingData.length >= 9){
 		existingData = existingData.splice(0, 9);
-
-
-
-function addToTileHistory(e:any, eventType:"build" | "rotate"){
-	const unit = e.unit;
-	if(!unit.player) return;
-	const tile = e.tile;
-	const realP = e.unit.player;
-	const pos = tile.x + ',' + tile.y;
-	const destroy = e.breaking;
-	
-	tileHistory[pos] ??= [];
-	if(eventType === 'build'){
-		tileHistory[pos].push({
-			name: realP.name,
-			action: destroy ? 'broke' : 'built',
-			type: destroy ? 'tile' : tile.block(),
-			time: Date.now(),
-		});
 	}
 
-	if(eventType === 'rotate'){
-		tileHistory[pos].push({
-			name: realP.name,
-			action: 'rotated',
-			type: 'block',
-			time: Date.now(),
-		});
-	}
-
-	if(tileHistory[pos].length >= 3){
-		tileHistory[pos].shift();
-	}
-	return;
+	//Encode
+	tileHistory[pos] = StringIO.write(existingData, (str, data) => str.writeArray(data, el => {
+		str.writeString(el.action, 2);
+		str.writeString(el.name);
+		str.writeNumber(el.time, 16);
+		str.writeString(el.type, 2);
+	}, 1));
 };
+
+
 
 Events.on(EventType.BlockBuildBeginEvent, addToTileHistory);
 Events.on(EventType.ConfigEvent, addToTileHistory);

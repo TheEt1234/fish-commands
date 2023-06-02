@@ -33,8 +33,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var commands = require("./commands");
 var consoleCommands = require("./consoleCommands");
 var packetHandlers = require("./packetHandlers");
-var infoTrace = require("./infoTrace");
 var globals_1 = require("./globals");
+<<<<<<< HEAD
 <<<<<<< HEAD
 var memberCommands = require("./memberCommands");
 var menus = require("./menus");
@@ -45,14 +45,20 @@ var staffCommands = require("./staffCommands");
 var timers = require("./timers");
 var utils_1 = require("./utils");
 =======
+=======
+var infoTrace = require("./infoTrace");
+>>>>>>> dd60f0b (AAAA)
 var votekick = require("./votekick");
 var vnw = require("./vnw");
 var animtrail = require("./animtrail");
 var unitBuild = require("./unitBuild");
 var nerds = require("./nerd");
 var ranks_1 = require("./ranks");
+<<<<<<< HEAD
 var tileHistory = {};
 >>>>>>> 430d816 (Added votekick)
+=======
+>>>>>>> dd60f0b (AAAA)
 Events.on(EventType.PlayerJoin, function (e) {
     players_1.FishPlayer.onPlayerJoin(e.player);
 });
@@ -140,6 +146,10 @@ Events.on(EventType.ServerLoadEvent, function (e) {
     //	//serverIp = r.getResultAsString();
     //});
 });
+/**
+ * Keeps track of any action performed on a tile for use in /tilelog
+ * command.
+ */
 /**
  * Keeps track of any action performed on a tile for use in /tilelog
  * command.

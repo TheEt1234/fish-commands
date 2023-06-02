@@ -165,7 +165,7 @@ function check_if_votekick_valid_and_votekick(target, votekicker, outputFail, ou
         votekicker.kick("Sucesfully kicked yourself! Didn't even have to ask!", 0);
         return;
     }
-    var staff_is_there = Groups.player.find(function (p) { return p.admin && !players_1.FishPlayer.get(p).afk; });
+    var staff_is_there = Groups.player.find(function (p) { return p.admin && !players_1.FishPlayer.get(p).hasFlag("afk"); });
     if (staff_is_there != null) {
         outputFail("Staff is here, go ask them to stop that griefer");
         return;

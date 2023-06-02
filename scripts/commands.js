@@ -44,8 +44,12 @@ exports.consoleCommandList = consoleCommandList;
 /** Represents a permission that is required to do something. */
 =======
 var commandArgTypes = ["string", "number", "boolean", "player", "menuPlayer", "team"];
+<<<<<<< HEAD
 /** Represents a permission level that is required to run a specific command. */
 >>>>>>> 430d816 (Added votekick)
+=======
+/** Represents a permission that is required to do something. */
+>>>>>>> dd60f0b (AAAA)
 var Perm = /** @class */ (function () {
     function Perm(name, check, color, unauthorizedMessage) {
         if (color === void 0) { color = ""; }
@@ -212,7 +216,6 @@ function processArgs(args, processedCmdArgs, allowMenus) {
                         case "f":
                         case "n":
                         case "0":
-                        case "na":
                             outputArgs[cmdArg.name] = false;
                             break;
                         default: return { error: "Argument ".concat(args[i], " is not a boolean. Try \"true\" or \"false\".") };
