@@ -17,7 +17,6 @@ import { StringIO, getTimeSinceText, matchFilter } from "./utils";
 import * as infoTrace from "./infoTrace"
 import * as votekick from "./votekick"
 import * as vnw from "./vnw"
-import * as animtrail from "./animtrail"
 import type { TileHistoryEntry } from "./types";
 import * as unitBuild from "./unitBuild";
 import * as nerds from "./nerd"
@@ -106,10 +105,8 @@ Events.on(EventType.ServerLoadEvent, (e) => {
 	commands.register(playerCommands.commands, clientHandler, serverHandler);
 	commands.register(memberCommands.commands, clientHandler, serverHandler);
 	commands.register(packetHandlers.commands, clientHandler, serverHandler);
-	commands.register(vnw.commands ,clientHandler, serverHandler);
-	commands.register(votekick.commands, clientHandler, serverHandler);
-	commands.register(animtrail.commands, clientHandler ,serverHandler)
-	animtrail.startIncrementingTheFrame()
+	commands.register(vnw.commands ,clientHandler, serverHandler)
+	commands.register(votekick.commands, clientHandler, serverHandler)
 	commands.registerConsole(consoleCommands.commands, serverHandler);
 	packetHandlers.loadPacketHandlers();
 	infoTrace.loadTracer()
