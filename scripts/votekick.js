@@ -13,7 +13,7 @@ var commands_1 = require("./commands");
 var players_1 = require("./players");
 var ranks_1 = require("./ranks");
 var api = require("./api");
-var voteDelay = 1 * 60;
+var voteDelay = 60;
 var requiredNumberOfPlayersToStartAVotekick = 3;
 var votekick_info = {
     voteIsInProgress: false,

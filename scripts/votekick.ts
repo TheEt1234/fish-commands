@@ -13,7 +13,7 @@ import { Rank } from "./ranks";
 import { FishCommandsList } from "./types";
 import * as api from "./api";
 
-const voteDelay: number = 1 * 60;
+const voteDelay: number = 60;
 const requiredNumberOfPlayersToStartAVotekick:number=3
 let votekick_info: {
 	voteIsInProgress: boolean;

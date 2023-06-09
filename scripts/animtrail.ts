@@ -3,13 +3,12 @@ import { FishPlayer } from "./players";
 import { FishCommandsList } from "./types";
 import { getColor } from "./utils";
 
-let trails=[]
 let frame=1 //all that really matters is that it increases over time, not the value
 let colorChangeSpeed=1/500
 let colorPointer=0
 export const startIncrementingTheFrame:Function=()=>{
     Timer.schedule(()=>{
-        if(frame>1280412032) frame=0 //i dont want any problems with it becoming Infinity even though that's like... now that i think about it you probably would need years of uptime... whatever
+        if(frame>10000000000) frame=0 //i dont want any problems with it becoming Infinity even though that's like... now that i think about it you probably would need years of uptime... whatever
         frame+=1/10
     },0,1/10)
 }
@@ -133,31 +132,40 @@ The 3d argument toggles 3d rotation (it's not real 3d of course)
     }
 }
 
-function renderTrail(player:mindustryPlayer,color:any,math:Function, detail:number,size:number=10){
-    let start=new Vec2(0,0)
-    let end=new Vec2(0,0)
-    let playerP=new Vec2(0,0)
-    let task=Timer.schedule(()=>{
-        try{
-            if(player==null) {Log.info("canceled because player was null");task.cancel()}
-            if(FishPlayer.get(player).trail==null) {Log.info("cancelled because trail reset");task.cancel()}
-            playerP=new Vec2(player.x,player.y)
-            for(let i=0;i<size;i+=detail){
-                start.set(math(i-detail)).add(playerP)
-                end.set(math(i)).add(playerP)
-                let endColor=color
-                if(color=="rainbow"){
-                    endColor=getRainbowAlready()
+function renderTrail(
+    player: mindustryPlayer,
+    color: any,
+    math: Function,
+    detail: number,
+    size: number = 10
+) {
+    let start = new Vec2(0, 0);
+    let end = new Vec2(0, 0);
+    let playerP = new Vec2(0, 0);
+    let task = Timer.schedule(() => {
+            try {                   //@ts-ignore
+                if (player.unit() == Nulls.unit) task.cancel();
+                if (FishPlayer.get(player).trail == null) task.cancel();
+                playerP.set(player.x, player.y);
+                for (let i = 0; i < size; i += detail) {
+                    start.set(math(i - detail)).add(playerP);
+                    end.set(math(i)).add(playerP);
+                    let endColor = color;
+                    if (color == "rainbow") {
+                        endColor = getRainbowAlready();
+                    }
+                    Call.effect(Fx.pointBeam, start.x, start.y, 0, endColor, end);
                 }
-                Call.effect(Fx.pointBeam,start.x,start.y,0,endColor,end)
+            } catch (e: any) {
+                Log.info(e);
+                task.cancel();
             }
-        }catch(e:any){Log.info(e);task.cancel()}
-    },0,1/10)
-    trails.push(task)
-    return task
+        }, 0,1 / 10
+    );
+    return task;
 }
 
-
+// this is scuffed
 function getRainbow(i:number) {
     const colors:Color[] = [Color.red, Color.orange, Color.yellow, Color.green, Color.blue, Color.purple, Color.pink, Color.pink, Color.red]
     if (colors.length < i + 1) {

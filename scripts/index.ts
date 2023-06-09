@@ -19,7 +19,6 @@ import * as vnw from "./vnw"
 import * as animtrail from "./animtrail"
 import type { TileHistoryEntry } from "./types";
 import * as unitBuild from "./unitBuild";
-import * as nerds from "./nerd"
 import { Rank } from "./ranks";
 
 
@@ -41,7 +40,6 @@ Events.on(EventType.ServerLoadEvent, (e) => {
 	const serverHandler = Core.app.listeners.find(
 		(l) => l instanceof Packages.mindustry.server.ServerControl
 	).handler;
-	const processors=[Blocks.microProcessor, Blocks.logicProcessor, Blocks.hyperProcessor]
 
 	FishPlayer.loadAll();
 	timers.initializeTimers();
@@ -94,9 +92,10 @@ Events.on(EventType.ServerLoadEvent, (e) => {
 			if(
 				Vars.state.rules.infiniteResources&&
 				(action.block==Blocks.largeLogicDisplay||
-				action.block==Blocks.logicDisplay)&&
+				action.block==Blocks.logicDisplay||
+				action.block==Blocks.canvas)&&
 				!fishP.ranksAtLeast(Rank.trusted)
-				) {player.sendMessage("Placing displays is only allowed for trusted");return false} // don't allow non trusted people to build logic displays in sandbox
+				) {player.sendMessage("Placing/deleting displays is only allowed for trusted in sandbox");return false} // don't allow non trusted people to build logic displays in sandbox
 			return true
 		}
 	});
@@ -104,7 +103,6 @@ Events.on(EventType.ServerLoadEvent, (e) => {
 	commands.register(staffCommands.commands, clientHandler, serverHandler);
 	commands.register(playerCommands.commands, clientHandler, serverHandler);
 	commands.register(memberCommands.commands, clientHandler, serverHandler);
-	commands.register(packetHandlers.commands, clientHandler, serverHandler);
 	commands.register(vnw.commands ,clientHandler, serverHandler);
 	commands.register(votekick.commands, clientHandler, serverHandler);
 	commands.register(animtrail.commands, clientHandler ,serverHandler)
@@ -113,8 +111,6 @@ Events.on(EventType.ServerLoadEvent, (e) => {
 	packetHandlers.loadPacketHandlers();
 	infoTrace.loadTracer()
 	unitBuild.validateUnitBuild()
-	nerds.nerdApocalipse()
-	
 	// stored for limiting /reset frequency
 	Core.settings.remove('lastRestart');
 

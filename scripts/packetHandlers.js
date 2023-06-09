@@ -15,15 +15,17 @@ var __values = (this && this.__values) || function(o) {
     throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.commands = exports.loadPacketHandlers = void 0;
-var commands_1 = require("./commands");
+exports.loadPacketHandlers = exports.lastAccessedLines = void 0;
+// hey frog here
+// thanks balam, i removed things that i thought were useless
+// i renamed bulkLineEffect to lines
+// it's the only packet handler i thought wasn't that useless and was like actually cool 
+// this should probably be renamed to "lines" in the future
 var players_1 = require("./players");
-var lastLabelText = "";
-var lastAccessedBulkLabel = null;
-var lastAccessedLabel = null;
-var lastAccessedBulkLine = null;
-var lastAccessedLine = null;
+var vector = new Vec2(0, 0); //done so that i dont have to create a new vector each time
+exports.lastAccessedLines = {}; //i think the cool kids call this a memory leak or something
 function loadPacketHandlers() {
+<<<<<<< HEAD
     Vars.netServer.addPacketHandler("label", function (player, content) {
         try {
             var fishP = players_1.FishPlayer.get(player);
@@ -102,6 +104,12 @@ function loadPacketHandlers() {
         var e_2, _a;
         var fishP = players_1.FishPlayer.get(player);
         if (!fishP.hasPerm("play"))
+=======
+    Vars.netServer.addPacketHandler("lines", function (player, content) {
+        var e_1, _a;
+        var fishP = players_1.FishPlayer.get(player);
+        if (fishP.stopped)
+>>>>>>> 0f1d443 (Polished up fork)
             return;
         try {
             var parts = content.split('|');
@@ -110,76 +118,31 @@ function loadPacketHandlers() {
                 return;
             }
             if (parts.length >= 1000) {
-                player.kick("Hey man that's a... i get you're an admin but... that's too much effects", 0);
+                player.kick("Too much trolling", 0);
                 return;
             }
             try {
-                for (var parts_2 = __values(parts), parts_2_1 = parts_2.next(); !parts_2_1.done; parts_2_1 = parts_2.next()) {
-                    var effectData = parts_2_1.value;
+                for (var parts_1 = __values(parts), parts_1_1 = parts_1.next(); !parts_1_1.done; parts_1_1 = parts_1.next()) {
+                    var effectData = parts_1_1.value;
                     var parts_of_part = effectData.split(",");
-                    Call.effect(Fx.pointBeam, Number(parts_of_part[0]), Number(parts_of_part[1]), 0, Color.valueOf(parts_of_part[4]), new Vec2(Number(parts_of_part[2]), Number(parts_of_part[3])));
+                    Call.effect(Fx.pointBeam, Number(parts_of_part[0]), Number(parts_of_part[1]), 0, Color.valueOf(parts_of_part[4]), vector.set(Number(parts_of_part[2]), Number(parts_of_part[3])));
                 }
             }
-            catch (e_2_1) { e_2 = { error: e_2_1 }; }
+            catch (e_1_1) { e_1 = { error: e_1_1 }; }
             finally {
                 try {
-                    if (parts_2_1 && !parts_2_1.done && (_a = parts_2.return)) _a.call(parts_2);
+                    if (parts_1_1 && !parts_1_1.done && (_a = parts_1.return)) _a.call(parts_1);
                 }
-                finally { if (e_2) throw e_2.error; }
+                finally { if (e_1) throw e_1.error; }
             }
-            lastAccessedBulkLine = fishP;
+            if (!exports.lastAccessedLines[player.id]) {
+                players_1.FishPlayer.messageStaff("lines", "[grey]" + player.plainName() + " is using packet handlers");
+            }
+            exports.lastAccessedLines[player.id] = true;
         }
         catch (e) {
-            player.kick("An error has occured while trying to process your bulkLineEffect request:\n" + e, 0);
+            player.kick("Error while trying to process your lines: (most likely something with color, just use the full hex code)\n" + e, 0);
         }
     });
-    // this is the silas effect but it gets real
-    // too real perhap?
 }
 exports.loadPacketHandlers = loadPacketHandlers;
-exports.commands = (0, commands_1.commandList)({
-    packet_handler_last_accessed: {
-        args: [],
-        description: "Gives you the players and the packet handler which they last accessed",
-        perm: commands_1.Perm.mod,
-        handler: function (_a) {
-            var output = _a.output;
-            var outputText = [""];
-            if (lastAccessedLabel && lastLabelText)
-                outputText.push("label: ".concat(lastAccessedLabel.name, " last text performed with it: ").concat(lastLabelText));
-            if (lastAccessedBulkLine)
-                outputText.push("bulkLine: ".concat(lastAccessedBulkLine.name));
-            if (lastAccessedLine)
-                outputText.push("line: ".concat(lastAccessedLine.name));
-            if (lastAccessedBulkLabel)
-                outputText.push("line: ".concat(lastAccessedBulkLabel.name));
-            if (outputText.length > 0) {
-                output(outputText.join("\n"));
-            }
-            else {
-                output("No packet handlers have been accessed.");
-            }
-        }
-    },
-    packet_handler_docs: {
-        description: "Documentation on how to use packet handlers that are in this server",
-        args: [],
-        perm: commands_1.Perm.none,
-        handler: function (_a) {
-            var sender = _a.sender;
-            var con = sender.player.con;
-            Call.infoMessage(con, "also keep in mind that T H E R E  I S   A   P A C K E T   S P A M   L I M I T");
-            Call.infoMessage(con, "[green]Also keep in mind that you have to multiply by 8 to spawn it at a clear coordinate (For example instead of 5,5 you'd have to do 5*8,5*8 to spawn a thing at 5,5, does this sound confusing...)");
-            Call.infoMessage(con, "\"worst error handling i have ever seen, why kick the player???\"\n  -ASimpleBeginner");
-            Call.infoMessage(con, "\"The code style when submitted was beyond drunk... but it worked... barely \" -BalaM314");
-            Call.infoMessage(con, "these packet handlers and everything related to them were made by [green]frog");
-            Call.infoMessage(con, "All commands mentioned should be performed on the client side console");
-            if (sender.hasPerm("bulkLabelPacket")) {
-                Call.infoMessage(con, "bulkLabel - Call.serverPacketReliable(\"bulkLabel\",/*it's basically like label but seperated by | you get the idea*/) - this is admin only");
-            }
-            Call.infoMessage(con, "label - Call.serverPacketReliable(\"label\",[text,duration,x,y].join(\",\"))\nthe text cannot be larger than 41 characters, duration cannot be larger than 10");
-            Call.infoMessage(con, "lineEffect - Call.serverPacketReliable(\"lineEffect\",[startX,startY,endX,endY,color].join(\",\"))\n The color is a hex code and a string");
-            Call.infoMessage(con, "bulkLineEffect - Call.serverPacketReliable(\"bulkLineEffect\",[startX,startY,endX,endY,color].join(\",\")+\"|\"+[startX,startY,endX,endY,color].join(\",\")+\"|\"))) - lineEffect but seperated by | so packet spam won't be a problem, can only contain 10 effects");
-        }
-    }
-});

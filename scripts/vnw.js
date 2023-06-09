@@ -60,14 +60,14 @@ function start_vnw(playerToStartTheVote, wavesToSkip, atOnce) {
 }
 function vote(who, what) {
     var changedOpinion = false;
-    for (var i = 0; i < vnwData.votes.length; i++) {
-        var vote_1 = vnwData.votes[i];
-        if (vote_1[0] == who)
+    vnwData.votes.forEach(function (v) {
+        if (v[0].uuid() == who.uuid()) {
             changedOpinion = true;
-        vote_1[1] = what;
-    }
+            v[1] = what;
+        }
+    });
     if (!changedOpinion) {
-        vnwData.votes.push([[who, what]]);
+        vnwData.votes.push([who, what]);
     }
     Call.sendMessage("".concat(getPlayerNameHowIWant(who), " ").concat(changedOpinion ? "has changed their opinion to " : "has said", " ").concat(what ? "[lime]yes[]" : "[scarlet]No[]", " for skipping ").concat(vnwData.wavesToSkip, " waves"));
     Call.sendMessage("".concat(countVotes(), "/").concat(vnwData.voteRequirements, " [lightgrey]You can vote by doing /vnw y/n"));
@@ -78,8 +78,8 @@ function getPlayerNameHowIWant(player) {
 function countVotes() {
     var votes = 0;
     for (var i = 0; i < vnwData.votes.length; i++) {
-        var vote_2 = vnwData.votes[i];
-        if (vote_2) {
+        var vote_1 = vnwData.votes[i];
+        if (vote_1[1]) {
             votes++;
         }
         else {

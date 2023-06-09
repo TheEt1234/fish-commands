@@ -75,13 +75,11 @@ function start_vnw(playerToStartTheVote:mindustryPlayer,wavesToSkip:number,atOnc
 
 function vote(who:mindustryPlayer,what:boolean){
     let changedOpinion=false
-    for(let i=0;i<vnwData.votes.length;i++){
-        const vote=vnwData.votes[i]
-        if(vote[0]==who) changedOpinion=true;
-        vote[1]=what;
-    }
+    vnwData.votes.forEach(v=>{
+        if(v[0].uuid()==who.uuid()) {changedOpinion=true;v[1]=what}
+    })
     if(!changedOpinion){
-        vnwData.votes.push([[who,what]])
+        vnwData.votes.push([who,what])
     }
     Call.sendMessage(
 `${getPlayerNameHowIWant(who)} ${changedOpinion?"has changed their opinion to ":"has said"} ${what?"[lime]yes[]":"[scarlet]No[]"} for skipping ${vnwData.wavesToSkip} waves`
@@ -99,7 +97,7 @@ function countVotes(){
     let votes=0
     for(let i=0;i<vnwData.votes.length;i++){
         const vote=vnwData.votes[i]
-        if(vote){
+        if(vote[1]){
             votes++
         }else{
             votes--

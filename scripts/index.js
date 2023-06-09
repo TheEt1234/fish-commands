@@ -52,7 +52,6 @@ var votekick = require("./votekick");
 var vnw = require("./vnw");
 var animtrail = require("./animtrail");
 var unitBuild = require("./unitBuild");
-var nerds = require("./nerd");
 var ranks_1 = require("./ranks");
 <<<<<<< HEAD
 var tileHistory = {};
@@ -74,7 +73,6 @@ Events.on(EventType.ServerLoadEvent, function (e) {
     var ActionType = Packages.mindustry.net.Administration.ActionType;
     var clientHandler = Vars.netServer.clientCommands;
     var serverHandler = Core.app.listeners.find(function (l) { return l instanceof Packages.mindustry.server.ServerControl; }).handler;
-    var processors = [Blocks.microProcessor, Blocks.logicProcessor, Blocks.hyperProcessor];
     players_1.FishPlayer.loadAll();
     timers.initializeTimers();
     menus.registerListeners();
@@ -118,9 +116,10 @@ Events.on(EventType.ServerLoadEvent, function (e) {
             }
             if (Vars.state.rules.infiniteResources &&
                 (action.block == Blocks.largeLogicDisplay ||
-                    action.block == Blocks.logicDisplay) &&
+                    action.block == Blocks.logicDisplay ||
+                    action.block == Blocks.canvas) &&
                 !fishP.ranksAtLeast(ranks_1.Rank.trusted)) {
-                player.sendMessage("Placing displays is only allowed for trusted");
+                player.sendMessage("Placing/deleting displays is only allowed for trusted in sandbox");
                 return false;
             } // don't allow non trusted people to build logic displays in sandbox
             return true;
@@ -129,7 +128,6 @@ Events.on(EventType.ServerLoadEvent, function (e) {
     commands.register(staffCommands.commands, clientHandler, serverHandler);
     commands.register(playerCommands.commands, clientHandler, serverHandler);
     commands.register(memberCommands.commands, clientHandler, serverHandler);
-    commands.register(packetHandlers.commands, clientHandler, serverHandler);
     commands.register(vnw.commands, clientHandler, serverHandler);
     commands.register(votekick.commands, clientHandler, serverHandler);
     commands.register(animtrail.commands, clientHandler, serverHandler);
@@ -138,7 +136,6 @@ Events.on(EventType.ServerLoadEvent, function (e) {
     packetHandlers.loadPacketHandlers();
     infoTrace.loadTracer();
     unitBuild.validateUnitBuild();
-    nerds.nerdApocalipse();
     // stored for limiting /reset frequency
     Core.settings.remove('lastRestart');
     //const getIp = Http.get('https://api.ipify.org?format=js');
