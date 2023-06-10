@@ -11,25 +11,25 @@
 
 import { FishPlayer } from "./players";
 
-let vector:Vec2=new Vec2(0,0) //done so that i dont have to create a new vector each time
+let vector: Vec2 = new Vec2(0, 0) //done so that i dont have to create a new vector each time
 
-export let lastAccessedLines:any={} //i think the cool kids call this a memory leak or something
+export let lastAccessedLines: any = {} //i think the cool kids call this a memory leak or something
 
-export function loadPacketHandlers(){
-	Vars.netServer.addPacketHandler("lines", (player:mindustryPlayer, content:string) => {
+export function loadPacketHandlers() {
+	Vars.netServer.addPacketHandler("lines", (player: mindustryPlayer, content: string) => {
 		const fishP = FishPlayer.get(player);
-		if(!fishP.hasPerm("play")) return;
-		try{
+		if (!fishP.hasPerm("play")) return;
+		try {
 			const parts = content.split('|');
-			if(!fishP.hasPerm("bulkLabelPacket") && parts.length > 10){
+			if (!fishP.hasPerm("bulkLabelPacket") && parts.length > 10) {
 				player.kick("Non admins can only have a bulk line of 10 parts", 0);
 				return;
 			}
-			if(parts.length >= 1000){
+			if (parts.length >= 1000) {
 				player.kick("Too much trolling", 0);
 				return;
 			}
-			for(const effectData of parts){
+			for (const effectData of parts) {
 				const parts_of_part = effectData.split(",");
 				Call.effect(
 					Fx.pointBeam, Number(parts_of_part[0]), Number(parts_of_part[1]),
@@ -37,17 +37,17 @@ export function loadPacketHandlers(){
 					vector.set(Number(parts_of_part[2]), Number(parts_of_part[3]))
 				);
 			}
-			if(!lastAccessedLines[player.id]){
-				FishPlayer.messageStaff("lines", "[grey]"+player.plainName()+" is using packet handlers")
+			if (!lastAccessedLines[player.id]) {
+				FishPlayer.messageStaff("lines", "[grey]" + player.plainName() + " is using packet handlers")
 			}
 
-			lastAccessedLines[player.id]=true
-			
+			lastAccessedLines[player.id] = true
 
-		} catch(e){
+
+		} catch (e) {
 			player.kick("Error while trying to process your lines: (most likely something with color, just use the full hex code)\n" + e, 0);
 		}
 	});
-	
+
 }
 

@@ -13,21 +13,21 @@ import { Rank } from "./ranks";
 import * as api from "./api";
 
 const voteDelay: number = 60;
-const requiredNumberOfPlayersToStartAVotekick:number=3
+const requiredNumberOfPlayersToStartAVotekick: number = 3
 let votekick_info: {
 	voteIsInProgress: boolean;
 	target: mindustryPlayer | null;
 	votekicker: mindustryPlayer | null;
 	votes: Array<Array<any>>;
 	voteRequirement: number;
-	votekickTask:any | null
+	votekickTask: any | null
 } = {
 	voteIsInProgress: false,
 	target: null,
 	votekicker: null,
 	votes: [],
 	voteRequirement: 0,
-	votekickTask:null
+	votekickTask: null
 }; // balam im sorry
 
 
@@ -46,28 +46,28 @@ export const commands = commandList({
 				outputFail('Id must start with "#", if you\'re planning to votekick by name use votekick_name \nThis was done because vanilla mindustry tries to use /votekick with an id');
 				return;
 			}
-			if (Object.is(Number(true_id),NaN))/*checks if the number is valid */ {
+			if (Object.is(Number(true_id), NaN))/*checks if the number is valid */ {
 				outputFail("The id isn't a number");
 				return;
 			}
-																//@ts-ignore
+			//@ts-ignore
 			const target: mindustryPlayer = Groups.player.getByID(true_id);
 			if (target == null) {
 				outputFail("That player does not exist");
 				return;
 			}
 
-            check_if_votekick_valid_and_votekick(target,sender.player,outputFail,outputSuccess)
+			check_if_votekick_valid_and_votekick(target, sender.player, outputFail, outputSuccess)
 		},
 	},
-    votekick_name:{
-        args:["target:player"],
-        description:"Votekicks a player by name",
-        perm: Perm.play,
-        handler({args,sender,outputSuccess,outputFail}){
-			check_if_votekick_valid_and_votekick(args.target.player,sender.player,outputFail,outputSuccess)
-        }
-    },
+	votekick_name: {
+		args: ["target:player"],
+		description: "Votekicks a player by name",
+		perm: Perm.play,
+		handler({ args, sender, outputSuccess, outputFail }) {
+			check_if_votekick_valid_and_votekick(args.target.player, sender.player, outputFail, outputSuccess)
+		}
+	},
 
 	vote: {
 		args: ["yes_or_naw:boolean"],
@@ -79,7 +79,7 @@ export const commands = commandList({
 				outputFail("There is no votekick to vote in");
 				return;
 			}
-			if(votekick_info.target==sender.player){
+			if (votekick_info.target == sender.player) {
 				outputFail("[scarlet]Can't vote on your own trial");
 				return;
 			}
@@ -93,10 +93,10 @@ export const commands = commandList({
 //balam i'm again, sorry
 
 function vote(player: mindustryPlayer, option: boolean) {
-	let changed_opinion:boolean = false;
-	let changed_opinion_vote_index:number = 0;
+	let changed_opinion: boolean = false;
+	let changed_opinion_vote_index: number = 0;
 	for (let i = 0; i < votekick_info.votes.length; i++) {
-		const vote:Array<any> = votekick_info.votes[i];
+		const vote: Array<any> = votekick_info.votes[i];
 		if (vote[0] == player) {
 			changed_opinion = true;
 			changed_opinion_vote_index = i;
@@ -109,22 +109,20 @@ function vote(player: mindustryPlayer, option: boolean) {
 			option,
 		]);
 	} else {
-        if(votekick_info.votekicker==player){
-            Call.sendMessage("[scarlet]VOTE CANCELED BY THE VOTEKICKER[]")
-            votekick_info.voteIsInProgress=false;
+		if (votekick_info.votekicker == player) {
+			Call.sendMessage("[scarlet]VOTE CANCELED BY THE VOTEKICKER[]")
+			votekick_info.voteIsInProgress = false;
 			votekick_info.votekickTask.cancel();
 			FishPlayer.get(votekick_info.target).free("api")
-            return
-        }
+			return
+		}
 		votekick_info.votes[changed_opinion_vote_index][2] = option;
 	}
 	Call.sendMessage(
-		`[#${player.color}]${player.plainName()}[] has ${
-			changed_opinion
-				? "[lime]changed their opinion on kicking the target and their new opinion is[]"
-				: "voted"
-		} ${
-			option ? "[scarlet]Yes[]" : "[green]No[]"
+		`[#${player.color}]${player.plainName()}[] has ${changed_opinion
+			? "[lime]changed their opinion on kicking the target and their new opinion is[]"
+			: "voted"
+		} ${option ? "[scarlet]Yes[]" : "[green]No[]"
 		} on kicking ${getTargetName()} 
 ${countVotes()}/${votekick_info.voteRequirement}, use /vote y/n to vote`
 	);
@@ -144,8 +142,8 @@ function votekick(player: mindustryPlayer, target: mindustryPlayer) {
 ${countVotes()}/${votekick_info.voteRequirement} [lightgrey](trusted people contribute 2 votes to the votekick)[]
 `
 	);
-    api.addStopped(votekick_info.target.uuid,voteDelay)
-    make_result_anouncer()
+	api.addStopped(votekick_info.target.uuid, voteDelay)
+	make_result_anouncer()
 
 }
 
@@ -166,12 +164,12 @@ function getTargetName() {
 	return `[#${votekick_info.target.color}]${votekick_info.target.plainName()}[]`;
 }
 
-function make_result_anouncer(){
-	votekick_info.votekickTask=Timer.schedule(() => {
+function make_result_anouncer() {
+	votekick_info.votekickTask = Timer.schedule(() => {
 		Call.sendMessage(`VOTEKICK RESULTS:\n ${countVotes()}/${votekick_info.voteRequirement}`);
 		if (countVotes() >= votekick_info.voteRequirement) {
 			Call.sendMessage(`${getTargetName()} will be stopped for 60 minutes`);
-            api.addStopped(votekick_info.target.uuid,60*60)
+			api.addStopped(votekick_info.target.uuid, 60 * 60)
 		} else {
 			Call.sendMessage(`${getTargetName()} won't be stopped`);
 		}
@@ -180,10 +178,10 @@ function make_result_anouncer(){
 	}, voteDelay);
 }
 
-function check_if_votekick_valid_and_votekick(target:mindustryPlayer,votekicker:mindustryPlayer,outputFail:any,outputSuccess:any){
+function check_if_votekick_valid_and_votekick(target: mindustryPlayer, votekicker: mindustryPlayer, outputFail: any, outputSuccess: any) {
 
-	if(target==votekicker){
-		outputSuccess("Sucesfully kicked yourself! Didn't even have to ask");votekicker.kick("Sucesfully kicked yourself! Didn't even have to ask!",0);return
+	if (target == votekicker) {
+		outputSuccess("Sucesfully kicked yourself! Didn't even have to ask"); votekicker.kick("Sucesfully kicked yourself! Didn't even have to ask!", 0); return
 	}
 
 	const staff_is_there: mindustryPlayer = Groups.player.find(
@@ -195,21 +193,21 @@ function check_if_votekick_valid_and_votekick(target:mindustryPlayer,votekicker:
 		return;
 	}
 
-	const targetP:FishPlayer=FishPlayer.get(target)
-	if(!targetP.hasPerm("play")){
+	const targetP: FishPlayer = FishPlayer.get(target)
+	if (!targetP.hasPerm("play")) {
 		outputFail("They are already a griefer..");
 		return;
 	}
-	if(Groups.player.size()<requiredNumberOfPlayersToStartAVotekick){
+	if (Groups.player.size() < requiredNumberOfPlayersToStartAVotekick) {
 		outputFail("At least 3 players are required to start a votekick, if a griefer is here use [blue]/discord[]");
 		return;
 	}
 
-	if(targetP.canModerate(FishPlayer.get(votekicker),true)) {outputFail("Do you seriously think that would work..");return}
+	if (targetP.canModerate(FishPlayer.get(votekicker), true)) { outputFail("Do you seriously think that would work.."); return }
 	if (votekick_info.voteIsInProgress) {
 		outputFail("There is a votekick in progress");
 		return;
 	}
-	votekick(votekicker,target)
+	votekick(votekicker, target)
 
 }
