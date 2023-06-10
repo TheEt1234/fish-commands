@@ -36,6 +36,7 @@ var packetHandlers = require("./packetHandlers");
 var globals_1 = require("./globals");
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 var memberCommands = require("./memberCommands");
 var menus = require("./menus");
 var ohno_1 = require("./ohno");
@@ -48,6 +49,8 @@ var utils_1 = require("./utils");
 =======
 var infoTrace = require("./infoTrace");
 >>>>>>> dd60f0b (AAAA)
+=======
+>>>>>>> 72b3fd4 (Removed info tracer as /info exists)
 var votekick = require("./votekick");
 var vnw = require("./vnw");
 var animtrail = require("./animtrail");
@@ -134,7 +137,6 @@ Events.on(EventType.ServerLoadEvent, function (e) {
     animtrail.startIncrementingTheFrame();
     commands.registerConsole(consoleCommands.commands, serverHandler);
     packetHandlers.loadPacketHandlers();
-    infoTrace.loadTracer();
     unitBuild.validateUnitBuild();
     // stored for limiting /reset frequency
     Core.settings.remove('lastRestart');

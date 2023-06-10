@@ -13,10 +13,10 @@ import { FishPlayer } from './players';
 import * as staffCommands from './staffCommands';
 import * as timers from './timers';
 import { StringIO, getTimeSinceText, matchFilter } from "./utils";
-import * as infoTrace from "./infoTrace"
 import * as votekick from "./votekick"
 import * as vnw from "./vnw"
 import * as animtrail from "./animtrail"
+import * as packetHandlers from "./packetHandlers"
 import type { TileHistoryEntry } from "./types";
 import * as unitBuild from "./unitBuild";
 import { Rank } from "./ranks";
@@ -109,7 +109,6 @@ Events.on(EventType.ServerLoadEvent, (e) => {
 	animtrail.startIncrementingTheFrame()
 	commands.registerConsole(consoleCommands.commands, serverHandler);
 	packetHandlers.loadPacketHandlers();
-	infoTrace.loadTracer()
 	unitBuild.validateUnitBuild()
 	// stored for limiting /reset frequency
 	Core.settings.remove('lastRestart');
