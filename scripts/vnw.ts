@@ -1,5 +1,4 @@
-import { Perm } from "./commands";
-import { FishCommandsList } from "./types";
+import { Perm, commandList } from "./commands";
 
 const cooldown:number=60
 
@@ -21,11 +20,11 @@ let vnwData:{
     task:null
 }
 
-export const commands:FishCommandsList={
+export const commands=commandList({
     svnw:{
         description:"S - start V - vote for NW - new wave, start vote for new wave",
         args:["waves_to_skip:number","at_once:boolean"],
-        perm:Perm.notGriefer,
+        perm:Perm.play,
         handler({args,sender,outputFail}){
             if(vnwData.isVoteOngoing){
                 outputFail("A vote is already ongoing");
@@ -48,7 +47,7 @@ ${args.at_once?"[lightgrey]especially at once... the limit is 3 there":"[lightgr
     vnw:{
         description:"V - vote N - new W - wave, vote for a new wave",
         args:["yes_or_naw:boolean"],
-        perm:Perm.notGriefer,
+        perm:Perm.play,
         handler({args,outputFail,sender}){
             if(!vnwData.isVoteOngoing){
                 outputFail("There is no vote to vote on")
@@ -57,7 +56,7 @@ ${args.at_once?"[lightgrey]especially at once... the limit is 3 there":"[lightgr
             vote(sender.player,args.yes_or_naw)
         }
     }
-}
+})
 
 
 function start_vnw(playerToStartTheVote:mindustryPlayer,wavesToSkip:number,atOnce:boolean){

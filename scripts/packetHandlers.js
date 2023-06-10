@@ -28,7 +28,7 @@ function loadPacketHandlers() {
     Vars.netServer.addPacketHandler("lines", function (player, content) {
         var e_1, _a;
         var fishP = players_1.FishPlayer.get(player);
-        if (fishP.stopped)
+        if (!fishP.hasPerm("play"))
             return;
         try {
             var parts = content.split('|');

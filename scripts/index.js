@@ -32,11 +32,7 @@ var __read = (this && this.__read) || function (o, n) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var commands = require("./commands");
 var consoleCommands = require("./consoleCommands");
-var packetHandlers = require("./packetHandlers");
 var globals_1 = require("./globals");
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 var memberCommands = require("./memberCommands");
 var menus = require("./menus");
 var ohno_1 = require("./ohno");
@@ -45,22 +41,12 @@ var players_1 = require("./players");
 var staffCommands = require("./staffCommands");
 var timers = require("./timers");
 var utils_1 = require("./utils");
-=======
-=======
-var infoTrace = require("./infoTrace");
->>>>>>> dd60f0b (AAAA)
-=======
->>>>>>> 72b3fd4 (Removed info tracer as /info exists)
 var votekick = require("./votekick");
 var vnw = require("./vnw");
 var animtrail = require("./animtrail");
+var packetHandlers = require("./packetHandlers");
 var unitBuild = require("./unitBuild");
 var ranks_1 = require("./ranks");
-<<<<<<< HEAD
-var tileHistory = {};
->>>>>>> 430d816 (Added votekick)
-=======
->>>>>>> dd60f0b (AAAA)
 Events.on(EventType.PlayerJoin, function (e) {
     players_1.FishPlayer.onPlayerJoin(e.player);
 });

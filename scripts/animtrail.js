@@ -15,10 +15,10 @@ var startIncrementingTheFrame = function () {
     }, 0, 1 / 10);
 };
 exports.startIncrementingTheFrame = startIncrementingTheFrame;
-exports.commands = {
+exports.commands = (0, commands_1.commandList)({
     animtrail: {
         description: "A more advanced trail command",
-        perm: commands_1.Perm.notGriefer,
+        perm: commands_1.Perm.play,
         args: ["type:string?", "color:string?", "three_dimensions:boolean?"],
         handler: function (_a) {
             var sender = _a.sender, args = _a.args, output = _a.output, outputFail = _a.outputFail, outputSuccess = _a.outputSuccess;
@@ -110,7 +110,7 @@ exports.commands = {
             }
         }
     }
-};
+});
 function renderTrail(player, color, math, detail, size) {
     if (size === void 0) { size = 10; }
     var start = new Vec2(0, 0);

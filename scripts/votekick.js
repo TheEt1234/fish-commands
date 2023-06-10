@@ -24,12 +24,12 @@ var votekick_info = {
     votekickTask: null
 }; // balam im sorry
 //balam the .plainName() is there for a reason, it ensures that people cant render their name invisible by having [black] in it for example
-exports.commands = {
+exports.commands = (0, commands_1.commandList)({
     votekick: {
         //this command is *really* scuffed, it's to make vanilla work
         args: ["id:string"],
         description: "Votekicks a player **BY ID**, see votekick_name for votekick by name",
-        perm: commands_1.Perm.notGriefer,
+        perm: commands_1.Perm.play,
         handler: function (_a) {
             var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail;
             var true_id = args.id.replace("#", "");
@@ -41,6 +41,7 @@ exports.commands = {
                 outputFail("The id isn't a number");
                 return;
             }
+            //@ts-ignore
             var target = Groups.player.getByID(true_id);
             if (target == null) {
                 outputFail("That player does not exist");
@@ -52,7 +53,7 @@ exports.commands = {
     votekick_name: {
         args: ["target:player"],
         description: "Votekicks a player by name",
-        perm: commands_1.Perm.notGriefer,
+        perm: commands_1.Perm.play,
         handler: function (_a) {
             var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail;
             check_if_votekick_valid_and_votekick(args.target.player, sender.player, outputFail, outputSuccess);
@@ -61,7 +62,7 @@ exports.commands = {
     vote: {
         args: ["yes_or_naw:boolean"],
         description: "Allows you to vote in a votekick",
-        perm: commands_1.Perm.notGriefer,
+        perm: commands_1.Perm.play,
         handler: function (_a) {
             var args = _a.args, sender = _a.sender, outputFail = _a.outputFail;
             if (!votekick_info.voteIsInProgress) {
@@ -76,7 +77,7 @@ exports.commands = {
             vote(sender.player, playerVote);
         },
     },
-};
+});
 //balam i'm again, sorry
 function vote(player, option) {
     var changed_opinion = false;
@@ -118,7 +119,7 @@ function votekick(player, target) {
     ];
     votekick_info.voteRequirement = Math.floor(Groups.player.size() / 2);
     Call.sendMessage("--[scarlet] NOTICE ME[] -- \n[#".concat(player.color, "]").concat(player.plainName(), "[] **started a votekick** on [#").concat(target.color, "]").concat(target.plainName(), "[]\n").concat(countVotes(), "/").concat(votekick_info.voteRequirement, " [lightgrey](trusted people contribute 2 votes to the votekick)[]\n"));
-    timedStop(players_1.FishPlayer.get(votekick_info.target), voteDelay);
+    api.addStopped(votekick_info.target.uuid, voteDelay);
     make_result_anouncer();
 }
 function countVotes() {
@@ -143,21 +144,13 @@ function make_result_anouncer() {
         Call.sendMessage("VOTEKICK RESULTS:\n ".concat(countVotes(), "/").concat(votekick_info.voteRequirement));
         if (countVotes() >= votekick_info.voteRequirement) {
             Call.sendMessage("".concat(getTargetName(), " will be stopped for 60 minutes"));
-            timedStop(players_1.FishPlayer.get(votekick_info.target), 60 * 60);
+            api.addStopped(votekick_info.target.uuid, 60 * 60);
         }
         else {
             Call.sendMessage("".concat(getTargetName(), " won't be stopped"));
         }
         votekick_info.voteIsInProgress = false;
     }, voteDelay);
-}
-function timedStop(player, seconds) {
-    player.stop("api");
-    player.player.sendMessage("You've been stopped for " + seconds + " seconds");
-    Timer.schedule(function () {
-        player.free("api");
-        api.free(player.uuid);
-    }, seconds);
 }
 function check_if_votekick_valid_and_votekick(target, votekicker, outputFail, outputSuccess) {
     if (target == votekicker) {
@@ -171,7 +164,7 @@ function check_if_votekick_valid_and_votekick(target, votekicker, outputFail, ou
         return;
     }
     var targetP = players_1.FishPlayer.get(target);
-    if (targetP.stopped) {
+    if (!targetP.hasPerm("play")) {
         outputFail("They are already a griefer..");
         return;
     }

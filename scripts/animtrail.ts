@@ -1,6 +1,5 @@
-import { Perm } from "./commands";
+import { Perm, commandList } from "./commands";
 import { FishPlayer } from "./players";
-import { FishCommandsList } from "./types";
 import { getColor } from "./utils";
 
 let frame=1 //all that really matters is that it increases over time, not the value
@@ -13,10 +12,10 @@ export const startIncrementingTheFrame:Function=()=>{
     },0,1/10)
 }
 
-export const commands:FishCommandsList={
+export const commands= commandList({
     animtrail:{
         description:"A more advanced trail command",
-        perm:Perm.notGriefer,
+        perm:Perm.play,
         args:["type:string?","color:string?","three_dimensions:boolean?"],
         handler({sender, args, output, outputFail, outputSuccess}){
             let extraDimensional=1
@@ -130,7 +129,7 @@ The 3d argument toggles 3d rotation (it's not real 3d of course)
             }
         }
     }
-}
+})
 
 function renderTrail(
     player: mindustryPlayer,

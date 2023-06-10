@@ -11,11 +11,11 @@ var vnwData = {
     votes: [[]],
     task: null
 };
-exports.commands = {
+exports.commands = (0, commands_1.commandList)({
     svnw: {
         description: "S - start V - vote for NW - new wave, start vote for new wave",
         args: ["waves_to_skip:number", "at_once:boolean"],
-        perm: commands_1.Perm.notGriefer,
+        perm: commands_1.Perm.play,
         handler: function (_a) {
             var args = _a.args, sender = _a.sender, outputFail = _a.outputFail;
             if (vnwData.isVoteOngoing) {
@@ -36,7 +36,7 @@ exports.commands = {
     vnw: {
         description: "V - vote N - new W - wave, vote for a new wave",
         args: ["yes_or_naw:boolean"],
-        perm: commands_1.Perm.notGriefer,
+        perm: commands_1.Perm.play,
         handler: function (_a) {
             var args = _a.args, outputFail = _a.outputFail, sender = _a.sender;
             if (!vnwData.isVoteOngoing) {
@@ -46,7 +46,7 @@ exports.commands = {
             vote(sender.player, args.yes_or_naw);
         }
     }
-};
+});
 function start_vnw(playerToStartTheVote, wavesToSkip, atOnce) {
     vnwData.isVoteOngoing = true;
     vnwData.voteRequirements = Math.floor(Groups.player.size() / 2);

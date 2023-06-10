@@ -7,10 +7,9 @@
 // tl;dr sorry balam :pleading_face:
 
 // also balam can you like, make players have their own individual votekick cooldown, that would be really nice
-import { Perm } from "./commands";
+import { Perm, commandList } from "./commands";
 import { FishPlayer } from "./players";
 import { Rank } from "./ranks";
-import { FishCommandsList } from "./types";
 import * as api from "./api";
 
 const voteDelay: number = 60;
@@ -34,15 +33,15 @@ let votekick_info: {
 
 //balam the .plainName() is there for a reason, it ensures that people cant render their name invisible by having [black] in it for example
 
-export const commands: FishCommandsList = {
+export const commands = commandList({
 	votekick: {
 		//this command is *really* scuffed, it's to make vanilla work
 		args: ["id:string"],
 		description:
 			"Votekicks a player **BY ID**, see votekick_name for votekick by name",
-		perm: Perm.notGriefer,
+		perm: Perm.play,
 		handler({ args, sender, outputSuccess, outputFail }) {
-			const true_id: number = args.id.replace("#", "");
+			const true_id: string = args.id.replace("#", "");
 			if (!args.id.startsWith("#")) {
 				outputFail('Id must start with "#", if you\'re planning to votekick by name use votekick_name \nThis was done because vanilla mindustry tries to use /votekick with an id');
 				return;
@@ -51,7 +50,7 @@ export const commands: FishCommandsList = {
 				outputFail("The id isn't a number");
 				return;
 			}
-
+																//@ts-ignore
 			const target: mindustryPlayer = Groups.player.getByID(true_id);
 			if (target == null) {
 				outputFail("That player does not exist");
@@ -64,7 +63,7 @@ export const commands: FishCommandsList = {
     votekick_name:{
         args:["target:player"],
         description:"Votekicks a player by name",
-        perm: Perm.notGriefer,
+        perm: Perm.play,
         handler({args,sender,outputSuccess,outputFail}){
 			check_if_votekick_valid_and_votekick(args.target.player,sender.player,outputFail,outputSuccess)
         }
@@ -73,7 +72,7 @@ export const commands: FishCommandsList = {
 	vote: {
 		args: ["yes_or_naw:boolean"],
 		description: "Allows you to vote in a votekick",
-		perm: Perm.notGriefer,
+		perm: Perm.play,
 		handler({ args, sender, outputFail }) {
 
 			if (!votekick_info.voteIsInProgress) {
@@ -89,7 +88,7 @@ export const commands: FishCommandsList = {
 		},
 	},
 
-};
+});
 
 //balam i'm again, sorry
 
@@ -145,7 +144,7 @@ function votekick(player: mindustryPlayer, target: mindustryPlayer) {
 ${countVotes()}/${votekick_info.voteRequirement} [lightgrey](trusted people contribute 2 votes to the votekick)[]
 `
 	);
-    timedStop(FishPlayer.get(votekick_info.target),voteDelay)
+    api.addStopped(votekick_info.target.uuid,voteDelay)
     make_result_anouncer()
 
 }
@@ -172,22 +171,13 @@ function make_result_anouncer(){
 		Call.sendMessage(`VOTEKICK RESULTS:\n ${countVotes()}/${votekick_info.voteRequirement}`);
 		if (countVotes() >= votekick_info.voteRequirement) {
 			Call.sendMessage(`${getTargetName()} will be stopped for 60 minutes`);
-            timedStop(FishPlayer.get(votekick_info.target),60*60)
+            api.addStopped(votekick_info.target.uuid,60*60)
 		} else {
 			Call.sendMessage(`${getTargetName()} won't be stopped`);
 		}
 		votekick_info.voteIsInProgress = false;
 
 	}, voteDelay);
-}
-
-function timedStop(player:FishPlayer,seconds:number){
-    player.stop("api")
-    player.player.sendMessage("You've been stopped for "+seconds+" seconds")
-    Timer.schedule(()=>{
-        player.free("api")
-		api.free(player.uuid) 
-    },seconds)
 }
 
 function check_if_votekick_valid_and_votekick(target:mindustryPlayer,votekicker:mindustryPlayer,outputFail:any,outputSuccess:any){
@@ -206,7 +196,7 @@ function check_if_votekick_valid_and_votekick(target:mindustryPlayer,votekicker:
 	}
 
 	const targetP:FishPlayer=FishPlayer.get(target)
-	if(targetP.stopped){
+	if(!targetP.hasPerm("play")){
 		outputFail("They are already a griefer..");
 		return;
 	}

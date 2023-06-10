@@ -33,7 +33,6 @@ var players_1 = require("./players");
 var ranks_1 = require("./ranks");
 var utils_1 = require("./utils");
 exports.allCommands = {};
-<<<<<<< HEAD
 var commandArgTypes = ["string", "number", "boolean", "player", "menuPlayer", "team", "time"];
 /** Use this to get the correct type for command lists. */
 var commandList = function (list) { return list; };
@@ -42,14 +41,6 @@ exports.commandList = commandList;
 var consoleCommandList = function (list) { return list; };
 exports.consoleCommandList = consoleCommandList;
 /** Represents a permission that is required to do something. */
-=======
-var commandArgTypes = ["string", "number", "boolean", "player", "menuPlayer", "team"];
-<<<<<<< HEAD
-/** Represents a permission level that is required to run a specific command. */
->>>>>>> 430d816 (Added votekick)
-=======
-/** Represents a permission that is required to do something. */
->>>>>>> dd60f0b (AAAA)
 var Perm = /** @class */ (function () {
     function Perm(name, check, color, unauthorizedMessage) {
         if (color === void 0) { color = ""; }
